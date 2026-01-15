@@ -1379,25 +1379,37 @@
     // ========================================
     // CONFIGURATION
     // ========================================
+    
+    /**
+     * [NAPRAWA #3] Migracja do formatu WebM (Opus)
+     * 
+     * Format WebM z kodekiem Opus zapewnia:
+     * - Bezszwowe zapętlanie (brak padding jak w MP3)
+     * - Lepszą kompresję przy wyższej jakości
+     * - Natywną obsługę Web Audio API
+     * 
+     * UWAGA: Pliki .webm muszą zostać przygotowane z odpowiednimi parametrami:
+     * ffmpeg -i input.mp3 -c:a libopus -b:a 128k -vn output.webm
+     */
     const CONFIG = {
       sessions: [
-        { id: 'body-scan', name: 'Podróż przez ciało', icon: '🧘', file: 'assets/audio/voice/body-scan.mp3', description: 'Delikatna wędrówka uwagi przez każdą część ciała.' },
-        { id: 'breath-sitting', name: 'Spokojny oddech', icon: '🌬️', file: 'assets/audio/voice/breath-sitting.mp3', description: 'Powrót do naturalnego rytmu oddechu.' },
-        { id: 'sounds-thoughts', name: 'Przestrzeń myśli', icon: '🎵', file: 'assets/audio/voice/sounds-thoughts.mp3', description: 'Obserwuj myśli jak chmury na niebie.' },
-        { id: 'relaxation', name: 'Głębokie rozluźnienie', icon: '💆', file: 'assets/audio/voice/relaxation.mp3', description: 'Systematyczne uwalnianie napięć ciała.' },
-        { id: 'visualization', name: 'Wewnętrzna podróż', icon: '🌌', file: 'assets/audio/voice/visualization.mp3', description: 'Wizualizacja prowadząca do miejsca spokoju.' }
+        { id: 'body-scan', name: 'Podróż przez ciało', icon: '🧘', file: 'assets/audio/voice/body-scan.webm', fallback: 'assets/audio/voice/body-scan.mp3', description: 'Delikatna wędrówka uwagi przez każdą część ciała.' },
+        { id: 'breath-sitting', name: 'Spokojny oddech', icon: '🌬️', file: 'assets/audio/voice/breath-sitting.webm', fallback: 'assets/audio/voice/breath-sitting.mp3', description: 'Powrót do naturalnego rytmu oddechu.' },
+        { id: 'sounds-thoughts', name: 'Przestrzeń myśli', icon: '🎵', file: 'assets/audio/voice/sounds-thoughts.webm', fallback: 'assets/audio/voice/sounds-thoughts.mp3', description: 'Obserwuj myśli jak chmury na niebie.' },
+        { id: 'relaxation', name: 'Głębokie rozluźnienie', icon: '💆', file: 'assets/audio/voice/relaxation.webm', fallback: 'assets/audio/voice/relaxation.mp3', description: 'Systematyczne uwalnianie napięć ciała.' },
+        { id: 'visualization', name: 'Wewnętrzna podróż', icon: '🌌', file: 'assets/audio/voice/visualization.webm', fallback: 'assets/audio/voice/visualization.mp3', description: 'Wizualizacja prowadząca do miejsca spokoju.' }
       ],
       scenes: [
-        { id: 'beach', name: 'Plaża o zmierzchu', icon: '🏖️', file: 'assets/audio/scenes/beach.mp3', description: 'Ciepły piasek, delikatne fale, odległy śpiew mew' },
-        { id: 'mountain-meadow', name: 'Górska polana', icon: '🏔️', file: 'assets/audio/scenes/mountain-meadow.mp3', description: 'Szum wiatru w trawach, przestrzeń i cisza' },
-        { id: 'summer-forest', name: 'Letni las', icon: '🌲', file: 'assets/audio/scenes/summer-forest.mp3', description: 'Szelest liści, śpiew ptaków, zapach żywicy' },
-        { id: 'night-cicadas', name: 'Nocne cykady', icon: '🌙', file: 'assets/audio/scenes/night-cicadas.mp3', description: 'Ciepła letnia noc, rytmiczny chór owadów' }
+        { id: 'beach', name: 'Plaża o zmierzchu', icon: '🏖️', file: 'assets/audio/scenes/beach.webm', fallback: 'assets/audio/scenes/beach.mp3', description: 'Ciepły piasek, delikatne fale, odległy śpiew mew' },
+        { id: 'mountain-meadow', name: 'Górska polana', icon: '🏔️', file: 'assets/audio/scenes/mountain-meadow.webm', fallback: 'assets/audio/scenes/mountain-meadow.mp3', description: 'Szum wiatru w trawach, przestrzeń i cisza' },
+        { id: 'summer-forest', name: 'Letni las', icon: '🌲', file: 'assets/audio/scenes/summer-forest.webm', fallback: 'assets/audio/scenes/summer-forest.mp3', description: 'Szelest liści, śpiew ptaków, zapach żywicy' },
+        { id: 'night-cicadas', name: 'Nocne cykady', icon: '🌙', file: 'assets/audio/scenes/night-cicadas.webm', fallback: 'assets/audio/scenes/night-cicadas.mp3', description: 'Ciepła letnia noc, rytmiczny chór owadów' }
       ],
       objects: [
-        { id: 'bell', name: 'Tybetańska misa', icon: '🔔', file: 'assets/audio/objects/bell.mp3', description: 'Rezonujący dźwięk prowadzący do skupienia' },
-        { id: 'clock', name: 'Stary zegar', icon: '🕰️', file: 'assets/audio/objects/clock.mp3', description: 'Miarowy rytm odmierzający chwile ciszy' },
-        { id: 'blackbird', name: 'Śpiew kosa', icon: '🐦', file: 'assets/audio/objects/blackbird.mp3', description: 'Melodia poranka, naturalny budzik duszy' },
-        { id: 'stream', name: 'Leśny strumień', icon: '💧', file: 'assets/audio/objects/stream.mp3', description: 'Nieustanny przepływ, symbol puszczania' }
+        { id: 'bell', name: 'Tybetańska misa', icon: '🔔', file: 'assets/audio/objects/bell.webm', fallback: 'assets/audio/objects/bell.mp3', description: 'Rezonujący dźwięk prowadzący do skupienia' },
+        { id: 'clock', name: 'Stary zegar', icon: '🕰️', file: 'assets/audio/objects/clock.webm', fallback: 'assets/audio/objects/clock.mp3', description: 'Miarowy rytm odmierzający chwile ciszy' },
+        { id: 'blackbird', name: 'Śpiew kosa', icon: '🐦', file: 'assets/audio/objects/blackbird.webm', fallback: 'assets/audio/objects/blackbird.mp3', description: 'Melodia poranka, naturalny budzik duszy' },
+        { id: 'stream', name: 'Leśny strumień', icon: '💧', file: 'assets/audio/objects/stream.webm', fallback: 'assets/audio/objects/stream.mp3', description: 'Nieustanny przepływ, symbol puszczania' }
       ],
       hrtfPositions: {
         left: { angle: -60, x: -0.866, z: -0.5 },
@@ -1405,13 +1417,30 @@
         right: { angle: 60, x: 0.866, z: -0.5 }
       },
       fadeInTime: 0.15,
-      fadeOutTime: 0.8
+      fadeOutTime: 0.8,
+      
+      /**
+       * [NAPRAWA #4] Czas wygładzania pozycji przestrzennej
+       * Wartość w sekundach dla setTargetAtTime() - eliminuje trzaski
+       */
+      positionSmoothingTime: 0.05
     };
 
     // ========================================
     // APPLICATION STATE
     // ========================================
+    
+    /**
+     * [NAPRAWA #1 & #5] Rozszerzony model stanu
+     * 
+     * Każdy element audio posiada teraz unikalny identyfikator instancji (instanceId),
+     * który pozwala na weryfikację czy operacja dotyczy aktualnej instancji.
+     * 
+     * Dodano również znacznik wersji stanu (_stateVersion) dla reaktywnego UI.
+     */
     const state = {
+      _stateVersion: 0,  // [NAPRAWA #5] Inkrementowany przy każdej zmianie stanu
+      
       audioContext: null,
       masterGain: null,
       lowShelfFilter: null,
@@ -1431,7 +1460,7 @@
         volume: 1,
         hrtfEnabled: true,
         position: 'center',
-        syncWithSpace: false  // Czy przestrzeń kończy się z końcem medytacji
+        syncWithSpace: false
       },
       
       // ARCHITEKT PRZESTRZENI
@@ -1443,7 +1472,8 @@
           gains: {},
           buffers: {},
           volumes: {},
-          expanded: {}
+          expanded: {},
+          instanceIds: {}  // [NAPRAWA #1] Śledzenie instancji źródeł
         },
         objects: {},
         timer: {
@@ -1460,7 +1490,7 @@
       masterVolume: 0.8
     };
 
-    // Initialize objects state
+    // Initialize objects state with instance tracking
     CONFIG.objects.forEach(obj => {
       state.architect.objects[obj.id] = {
         enabled: false,
@@ -1469,13 +1499,34 @@
         gainNode: null,
         pannerNode: null,
         volume: 0.5,
-        position: 'center'
+        position: 'center',
+        instanceId: null,      // [NAPRAWA #1] Unikalny ID instancji
+        isLoading: false       // [NAPRAWA #2] Flaga ładowania
       };
     });
 
     // ========================================
     // UTILITY FUNCTIONS
     // ========================================
+    
+    /**
+     * [NAPRAWA #1] Generowanie unikalnych identyfikatorów instancji
+     * Używamy kombinacji timestamp + random dla unikatowości
+     */
+    function generateInstanceId() {
+      return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    }
+    
+    /**
+     * [NAPRAWA #5] Funkcja inkrementująca wersję stanu
+     * Wywołuje reaktywne odświeżenie UI
+     */
+    function markStateChanged() {
+      state._stateVersion++;
+      // Wywołaj odświeżenie UI w następnej klatce animacji
+      requestAnimationFrame(syncAllUI);
+    }
+
     function formatTime(seconds) {
       if (!seconds || isNaN(seconds)) return '00:00';
       const mins = Math.floor(seconds / 60);
@@ -1536,6 +1587,7 @@
         state.architect.scene.gains[scene.id] = gain;
         state.architect.scene.volumes[scene.id] = 0.5;
         state.architect.scene.expanded[scene.id] = false;
+        state.architect.scene.instanceIds[scene.id] = null;
       });
       
       // Object nodes
@@ -1563,7 +1615,14 @@
     // ========================================
     // AUDIO LOADING
     // ========================================
-    async function loadAudioBuffer(url) {
+    
+    /**
+     * [NAPRAWA #3] Ładowanie z fallbackiem MP3 -> WebM
+     * 
+     * Próbujemy najpierw załadować WebM (bezszwowe pętle),
+     * a jeśli nie jest dostępny, używamy MP3 jako fallback.
+     */
+    async function loadAudioBuffer(url, fallbackUrl = null) {
       try {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -1571,6 +1630,20 @@
         return await state.audioContext.decodeAudioData(arrayBuffer);
       } catch (error) {
         console.warn(`Could not load audio: ${url}`, error.message);
+        
+        // [NAPRAWA #3] Próba fallbacku do MP3
+        if (fallbackUrl) {
+          console.log(`Trying fallback: ${fallbackUrl}`);
+          try {
+            const fallbackResponse = await fetch(fallbackUrl);
+            if (!fallbackResponse.ok) throw new Error(`HTTP ${fallbackResponse.status}`);
+            const fallbackArrayBuffer = await fallbackResponse.arrayBuffer();
+            return await state.audioContext.decodeAudioData(fallbackArrayBuffer);
+          } catch (fallbackError) {
+            console.warn(`Fallback also failed: ${fallbackUrl}`, fallbackError.message);
+          }
+        }
+        
         return null;
       }
     }
@@ -1582,7 +1655,7 @@
       showStatus(`Ładuję: ${session.name}...`);
       document.getElementById('voiceLoading').classList.add('visible');
       
-      const buffer = await loadAudioBuffer(session.file);
+      const buffer = await loadAudioBuffer(session.file, session.fallback);
       
       if (buffer) {
         state.meditation.buffer = buffer;
@@ -1597,11 +1670,18 @@
       }
       
       document.getElementById('voiceLoading').classList.remove('visible');
+      markStateChanged();
     }
 
     async function loadTimerSounds() {
-      state.architect.timer.startSoundBuffer = await loadAudioBuffer('assets/audio/timer/start.mp3');
-      state.architect.timer.endSoundBuffer = await loadAudioBuffer('assets/audio/timer/end.mp3');
+      state.architect.timer.startSoundBuffer = await loadAudioBuffer(
+        'assets/audio/timer/start.webm',
+        'assets/audio/timer/start.mp3'
+      );
+      state.architect.timer.endSoundBuffer = await loadAudioBuffer(
+        'assets/audio/timer/end.webm',
+        'assets/audio/timer/end.mp3'
+      );
     }
 
     function playTimerSound(buffer) {
@@ -1638,7 +1718,6 @@
         if (state.meditation.isPlaying) {
           stopMeditation();
           
-          // Jeśli sync włączony, zatrzymaj też przestrzeń
           if (state.meditation.syncWithSpace) {
             stopAllSpace();
           }
@@ -1647,6 +1726,7 @@
       
       updatePlayButton(true);
       requestAnimationFrame(updateProgress);
+      markStateChanged();
     }
 
     function pauseMeditation() {
@@ -1663,6 +1743,7 @@
       state.meditation.isPaused = true;
       
       updatePlayButton(false);
+      markStateChanged();
     }
 
     function stopMeditation() {
@@ -1679,6 +1760,7 @@
       updatePlayButton(false);
       updateProgressBar(0);
       document.getElementById('currentTime').textContent = '00:00';
+      markStateChanged();
     }
 
     function updateProgress() {
@@ -1712,14 +1794,28 @@
       btn.classList.toggle('playing', isPlaying);
     }
 
+    /**
+     * [NAPRAWA #4] Płynna zmiana pozycji z wygładzaniem
+     * 
+     * Użycie setTargetAtTime() zamiast setValueAtTime() eliminuje
+     * nagłe skoki wartości, które powodują trzaski (audio pops).
+     * 
+     * Parametr timeConstant określa czas wygładzania w sekundach.
+     */
     function updateMeditationPosition(position) {
       const pos = CONFIG.hrtfPositions[position];
-      if (!pos || !state.meditation.pannerNode) return;
+      if (!pos || !state.meditation.pannerNode || !state.audioContext) return;
       
-      state.meditation.pannerNode.positionX.setValueAtTime(pos.x, state.audioContext?.currentTime || 0);
-      state.meditation.pannerNode.positionY.setValueAtTime(0, state.audioContext?.currentTime || 0);
-      state.meditation.pannerNode.positionZ.setValueAtTime(pos.z, state.audioContext?.currentTime || 0);
+      const currentTime = state.audioContext.currentTime;
+      const smoothingTime = CONFIG.positionSmoothingTime;
+      
+      // [NAPRAWA #4] Płynne przejście logarytmiczne
+      state.meditation.pannerNode.positionX.setTargetAtTime(pos.x, currentTime, smoothingTime);
+      state.meditation.pannerNode.positionY.setTargetAtTime(0, currentTime, smoothingTime);
+      state.meditation.pannerNode.positionZ.setTargetAtTime(pos.z, currentTime, smoothingTime);
+      
       state.meditation.position = position;
+      markStateChanged();
     }
 
     function toggleHRTF(enabled) {
@@ -1734,34 +1830,67 @@
         state.meditation.gainNode.disconnect();
         state.meditation.gainNode.connect(state.masterGain);
       }
+      markStateChanged();
     }
 
     // ========================================
     // SPACE (ARCHITECT) PLAYBACK
     // ========================================
+    
+    /**
+     * [NAPRAWA #1] Bezpieczne zatrzymanie sceny z weryfikacją instancji
+     * 
+     * Problem: Przy szybkim przełączaniu scen, setTimeout mógł
+     * usunąć nową instancję zamiast starej.
+     * 
+     * Rozwiązanie: Każda instancja ma unikalny ID, który jest
+     * weryfikowany przed wykonaniem operacji cleanup.
+     */
+    function stopSceneSafe(sceneId, instanceId) {
+      const currentSource = state.architect.scene.sources[sceneId];
+      const currentInstanceId = state.architect.scene.instanceIds[sceneId];
+      
+      // [NAPRAWA #1] Weryfikacja czy to ta sama instancja
+      if (currentInstanceId !== instanceId) {
+        console.log(`[Race Guard] Skipping cleanup for outdated instance: ${instanceId}`);
+        return;
+      }
+      
+      if (currentSource) {
+        try {
+          currentSource.stop();
+          currentSource.disconnect();
+        } catch (e) {
+          // Source już zatrzymany - ignoruj
+        }
+        delete state.architect.scene.sources[sceneId];
+        state.architect.scene.instanceIds[sceneId] = null;
+      }
+    }
+
     async function selectScene(sceneId) {
       const scene = CONFIG.scenes.find(s => s.id === sceneId);
       if (!scene) return;
       
       showStatus(`Przygotowuję: ${scene.name}...`);
       
+      // Zatrzymaj poprzednią scenę jeśli istnieje
       if (state.architect.scene.active && state.architect.scene.sources[state.architect.scene.active]) {
         const oldSceneId = state.architect.scene.active;
-        const oldSource = state.architect.scene.sources[oldSceneId];
+        const oldInstanceId = state.architect.scene.instanceIds[oldSceneId];
         const oldGain = state.architect.scene.gains[oldSceneId];
         
         oldGain.gain.setTargetAtTime(0, state.audioContext.currentTime, CONFIG.fadeOutTime);
+        
+        // [NAPRAWA #1] Zaplanuj cleanup z weryfikacją instancji
         setTimeout(() => {
-          if (oldSource) {
-            oldSource.stop();
-            oldSource.disconnect();
-            delete state.architect.scene.sources[oldSceneId];
-          }
+          stopSceneSafe(oldSceneId, oldInstanceId);
         }, CONFIG.fadeOutTime * 1000 * 3);
       }
       
+      // Ładuj bufor jeśli nie istnieje
       if (!state.architect.scene.buffers[sceneId]) {
-        state.architect.scene.buffers[sceneId] = await loadAudioBuffer(scene.file);
+        state.architect.scene.buffers[sceneId] = await loadAudioBuffer(scene.file, scene.fallback);
       }
       
       const buffer = state.architect.scene.buffers[sceneId];
@@ -1769,6 +1898,9 @@
         showStatus(`Nie mogę odnaleźć tej przestrzeni`, 3000);
         return;
       }
+      
+      // [NAPRAWA #1] Generuj nowy ID instancji
+      const newInstanceId = generateInstanceId();
       
       const source = state.audioContext.createBufferSource();
       source.buffer = buffer;
@@ -1780,10 +1912,13 @@
       state.architect.scene.gains[sceneId].gain.setTargetAtTime(targetVolume, state.audioContext.currentTime, CONFIG.fadeInTime);
       
       source.start();
+      
+      // Zapisz źródło i ID instancji
       state.architect.scene.sources[sceneId] = source;
+      state.architect.scene.instanceIds[sceneId] = newInstanceId;
       state.architect.scene.active = sceneId;
       
-      updateSceneUI();
+      markStateChanged();
       showStatus(`${scene.name} — jesteś tutaj`);
     }
 
@@ -1793,52 +1928,80 @@
       if (state.architect.scene.gains[sceneId] && state.architect.scene.active === sceneId) {
         state.architect.scene.gains[sceneId].gain.setTargetAtTime(volume, state.audioContext.currentTime, 0.1);
       }
+      markStateChanged();
     }
 
     function stopScene(sceneId) {
+      const instanceId = state.architect.scene.instanceIds[sceneId];
       if (!state.architect.scene.sources[sceneId]) return;
       
-      const source = state.architect.scene.sources[sceneId];
       const gain = state.architect.scene.gains[sceneId];
       
       gain.gain.setTargetAtTime(0, state.audioContext.currentTime, CONFIG.fadeOutTime);
       
+      // [NAPRAWA #1] Zaplanuj cleanup z weryfikacją instancji
       setTimeout(() => {
-        if (source) {
-          source.stop();
-          source.disconnect();
-          delete state.architect.scene.sources[sceneId];
-        }
+        stopSceneSafe(sceneId, instanceId);
       }, CONFIG.fadeOutTime * 1000 * 3);
       
       state.architect.scene.active = null;
-      updateSceneUI();
+      markStateChanged();
       showStatus('Przestrzeń wyłączona');
     }
 
     function toggleSceneExpanded(sceneId) {
       state.architect.scene.expanded[sceneId] = !state.architect.scene.expanded[sceneId];
-      updateSceneUI();
+      markStateChanged();
     }
 
+    /**
+     * [NAPRAWA #1 & #2] Bezpieczne włączanie/wyłączanie obiektów
+     * 
+     * Rozwiązuje dwa problemy:
+     * 1. Race condition przy szybkim klikaniu
+     * 2. Brak walidacji po async loadBuffer()
+     */
     async function toggleObject(objectId, enabled) {
       const obj = CONFIG.objects.find(o => o.id === objectId);
       const objState = state.architect.objects[objectId];
       if (!obj || !objState) return;
       
+      // [NAPRAWA #2] Jeśli trwa ładowanie, ignoruj
+      if (objState.isLoading) {
+        console.log(`[Loading Guard] Object ${objectId} is still loading, ignoring toggle`);
+        return;
+      }
+      
+      // Zapisz zamierzony stan PRZED operacją async
       objState.enabled = enabled;
+      markStateChanged();
       
       if (enabled) {
         showStatus(`Dodaję: ${obj.name}...`);
         
+        // [NAPRAWA #1] Generuj nowy ID instancji
+        const newInstanceId = generateInstanceId();
+        objState.instanceId = newInstanceId;
+        objState.isLoading = true;
+        
+        // Ładuj bufor jeśli nie istnieje
         if (!objState.buffer) {
-          objState.buffer = await loadAudioBuffer(obj.file);
+          objState.buffer = await loadAudioBuffer(obj.file, obj.fallback);
+        }
+        
+        objState.isLoading = false;
+        
+        // [NAPRAWA #2] STATE GUARD - sprawdź czy użytkownik nie zmienił zdania
+        if (!objState.enabled || objState.instanceId !== newInstanceId) {
+          console.log(`[State Guard] User changed mind during load for ${objectId}`);
+          return;
         }
         
         if (!objState.buffer) {
           showStatus(`Nie mogę odnaleźć tego dźwięku`, 3000);
           objState.enabled = false;
-          updateObjectUI(objectId);
+          objState.instanceId = null;
+          markStateChanged();
           return;
         }
         
@@ -1855,19 +2018,36 @@
         
         showStatus(`${obj.icon} ${obj.name}`);
       } else {
+        // Wyłączanie
+        const instanceIdToStop = objState.instanceId;
+        
         if (objState.source) {
           objState.gainNode.gain.setTargetAtTime(0, state.audioContext.currentTime, CONFIG.fadeOutTime);
+          
+          // [NAPRAWA #1] Zaplanuj cleanup z weryfikacją instancji
+          const sourceToStop = objState.source;
           setTimeout(() => {
-            if (objState.source) {
-              objState.source.stop();
-              objState.source.disconnect();
-              objState.source = null;
+            // Weryfikuj czy to wciąż ta sama instancja
+            if (objState.instanceId === instanceIdToStop || objState.instanceId === null) {
+              try {
+                sourceToStop.stop();
+                sourceToStop.disconnect();
+              } catch (e) {
+                // Source już zatrzymany
+              }
+              
+              // Wyczyść tylko jeśli to ta sama instancja
+              if (objState.source === sourceToStop) {
+                objState.source = null;
+              }
             }
           }, CONFIG.fadeOutTime * 1000 * 3);
         }
+        
+        objState.instanceId = null;
       }
       
-      updateObjectUI(objectId);
+      markStateChanged();
     }
 
     function updateObjectVolume(objectId, volume) {
@@ -1878,17 +2058,27 @@
           objState.gainNode.gain.setTargetAtTime(volume, state.audioContext.currentTime, 0.1);
         }
       }
+      markStateChanged();
     }
 
+    /**
+     * [NAPRAWA #4] Płynna zmiana pozycji obiektu
+     */
     function updateObjectPosition(objectId, position) {
       const objState = state.architect.objects[objectId];
       const pos = CONFIG.hrtfPositions[position];
       if (!objState || !pos || !objState.pannerNode) return;
       
-      objState.pannerNode.positionX.setValueAtTime(pos.x, state.audioContext?.currentTime || 0);
-      objState.pannerNode.positionY.setValueAtTime(0, state.audioContext?.currentTime || 0);
-      objState.pannerNode.positionZ.setValueAtTime(pos.z, state.audioContext?.currentTime || 0);
+      const currentTime = state.audioContext?.currentTime || 0;
+      const smoothingTime = CONFIG.positionSmoothingTime;
+      
+      // [NAPRAWA #4] Płynne przejście logarytmiczne
+      objState.pannerNode.positionX.setTargetAtTime(pos.x, currentTime, smoothingTime);
+      objState.pannerNode.positionY.setTargetAtTime(0, currentTime, smoothingTime);
+      objState.pannerNode.positionZ.setTargetAtTime(pos.z, currentTime, smoothingTime);
+      
       objState.position = position;
+      markStateChanged();
     }
 
     function stopAllSpace() {
@@ -1942,6 +2132,8 @@
           timerFinished();
         }
       }, 1000);
+      
+      markStateChanged();
     }
 
     function stopTimer() {
@@ -1964,6 +2156,8 @@
         btn.classList.remove('active');
       });
       state.architect.timer.selectedPreset = null;
+      
+      markStateChanged();
     }
 
     function timerFinished() {
@@ -1989,6 +2183,76 @@
     // ========================================
     // UI RENDERING
     // ========================================
+    
+    /**
+     * [NAPRAWA #5] Centralna funkcja synchronizacji UI ze stanem
+     * 
+     * Wywoływana reaktywnie po każdej zmianie stanu.
+     * Zapewnia że UI zawsze odzwierciedla aktualny stan silnika audio.
+     */
+    function syncAllUI() {
+      syncSceneUI();
+      syncObjectsUI();
+      syncMeditationUI();
+    }
+    
+    function syncSceneUI() {
+      document.querySelectorAll('.scene-item').forEach(item => {
+        const sceneId = item.dataset.scene;
+        const isSelected = sceneId === state.architect.scene.active;
+        const isExpanded = state.architect.scene.expanded[sceneId];
+        
+        item.classList.toggle('selected', isSelected);
+        item.classList.toggle('expanded', isExpanded);
+      });
+    }
+    
+    function syncObjectsUI() {
+      CONFIG.objects.forEach(obj => {
+        const item = document.querySelector(`.object-item[data-object="${obj.id}"]`);
+        if (!item) return;
+        
+        const objState = state.architect.objects[obj.id];
+        item.classList.toggle('enabled', objState.enabled);
+        item.classList.toggle('disabled', !objState.enabled);
+        
+        const checkbox = item.querySelector('.object-checkbox');
+        if (checkbox) {
+          checkbox.classList.toggle('checked', objState.enabled);
+          checkbox.setAttribute('aria-checked', objState.enabled);
+        }
+        
+        // Synchronizuj pozycję
+        const positionContainer = item.querySelector('.object-position');
+        if (positionContainer) {
+          positionContainer.querySelectorAll('.btn-position').forEach(btn => {
+            btn.classList.toggle('selected', btn.dataset.pos === objState.position);
+          });
+        }
+      });
+    }
+    
+    function syncMeditationUI() {
+      // Synchronizacja przycisków pozycji
+      document.getElementById('voicePosition')?.querySelectorAll('.btn-position').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.pos === state.meditation.position);
+      });
+      
+      // Synchronizacja toggle HRTF
+      const hrtfToggle = document.getElementById('hrtfToggle');
+      if (hrtfToggle) {
+        hrtfToggle.classList.toggle('active', state.meditation.hrtfEnabled);
+        hrtfToggle.setAttribute('aria-checked', state.meditation.hrtfEnabled);
+      }
+      
+      // Synchronizacja toggle sync
+      const syncToggle = document.getElementById('syncToggle');
+      if (syncToggle) {
+        syncToggle.classList.toggle('active', state.meditation.syncWithSpace);
+        syncToggle.setAttribute('aria-checked', state.meditation.syncWithSpace);
+      }
+    }
+
     function renderSessionCards() {
       const container = document.getElementById('sessionCards');
       container.innerHTML = CONFIG.sessions.map(session => `
@@ -2094,14 +2358,7 @@
     }
 
     function updateSceneUI() {
-      document.querySelectorAll('.scene-item').forEach(item => {
-        const sceneId = item.dataset.scene;
-        const isSelected = sceneId === state.architect.scene.active;
-        const isExpanded = state.architect.scene.expanded[sceneId];
-        
-        item.classList.toggle('selected', isSelected);
-        item.classList.toggle('expanded', isExpanded);
-      });
+      syncSceneUI();
     }
 
     function renderObjectsList() {
@@ -2165,9 +2422,6 @@
             const objectId = posContainer.dataset.objectPosition;
             const position = btn.dataset.pos;
             updateObjectPosition(objectId, position);
-            
-            posContainer.querySelectorAll('.btn-position').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
           });
         });
       });
@@ -2187,16 +2441,7 @@
     }
 
     function updateObjectUI(objectId) {
-      const item = document.querySelector(`.object-item[data-object="${objectId}"]`);
-      if (!item) return;
-      
-      const objState = state.architect.objects[objectId];
-      item.classList.toggle('enabled', objState.enabled);
-      item.classList.toggle('disabled', !objState.enabled);
-      
-      const checkbox = item.querySelector('.object-checkbox');
-      checkbox.classList.toggle('checked', objState.enabled);
-      checkbox.setAttribute('aria-checked', objState.enabled);
+      syncObjectsUI();
     }
 
     // ========================================
@@ -2257,8 +2502,6 @@
       
       hrtfToggle.addEventListener('click', () => {
         const enabled = !hrtfToggle.classList.contains('active');
-        hrtfToggle.classList.toggle('active', enabled);
-        hrtfToggle.setAttribute('aria-checked', enabled);
         toggleHRTF(enabled);
       });
       
@@ -2274,10 +2517,6 @@
         btn.addEventListener('click', () => {
           const position = btn.dataset.pos;
           updateMeditationPosition(position);
-          
-          document.getElementById('voicePosition').querySelectorAll('.btn-position')
-            .forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
         });
       });
       
@@ -2286,9 +2525,8 @@
       
       syncToggle.addEventListener('click', () => {
         const enabled = !syncToggle.classList.contains('active');
-        syncToggle.classList.toggle('active', enabled);
-        syncToggle.setAttribute('aria-checked', enabled);
         state.meditation.syncWithSpace = enabled;
+        markStateChanged();
         
         if (enabled) {
           showStatus('Przestrzeń zakończy się z końcem medytacji');
@@ -2366,6 +2604,7 @@
       CONFIG.scenes.forEach(scene => {
         state.architect.scene.volumes[scene.id] = 0.5;
         state.architect.scene.expanded[scene.id] = false;
+        state.architect.scene.instanceIds[scene.id] = null;
       });
       
       renderSessionCards();
@@ -2374,7 +2613,8 @@
       setupEventHandlers();
       
       console.log('🎧 Przestrzeń relaksu — zainicjalizowana');
-      console.log('📁 Ścieżki audio: assets/audio/{voice,scenes,objects,timer}/*.mp3');
+      console.log('📁 Ścieżki audio: assets/audio/{voice,scenes,objects,timer}/*.webm (z fallbackiem .mp3)');
+      console.log('🔧 Naprawiono: Race conditions, async validation, WebM format, smooth panning, UI sync');
     }
 
     document.addEventListener('DOMContentLoaded', init);
