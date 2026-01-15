@@ -247,7 +247,6 @@
       display: none;
     }
 
-    /* Desktop: wszystkie sesje widoczne bez scrollowania */
     @media (min-width: 700px) {
       .session-cards {
         justify-content: center;
@@ -307,20 +306,14 @@
       line-height: 1.2;
     }
 
-    .session-duration {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-    }
-
     /* ========================================
-       VOICE CONTROLS
+       PANEL MEDYTACJI
        ======================================== */
-    .voice-controls {
+    .meditation-panel {
       text-align: center;
     }
 
-    .voice-title {
+    .meditation-title {
       font-family: var(--font-display);
       font-weight: 600;
       font-size: 1.25rem;
@@ -505,6 +498,7 @@
       display: flex;
       align-items: center;
       gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
     }
 
     .progress-time {
@@ -542,8 +536,37 @@
       100% { background-position: 200% 50%; }
     }
 
+    /* Sync Toggle */
+    .sync-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .sync-toggle .toggle-switch {
+      width: 48px;
+      height: 24px;
+    }
+
+    .sync-toggle .toggle-switch::after {
+      width: 16px;
+      height: 16px;
+      top: 3px;
+      left: 3px;
+    }
+
+    .sync-toggle .toggle-switch.active::after {
+      transform: translateX(24px);
+    }
+
     /* ========================================
-       RANGE SLIDER (Custom)
+       RANGE SLIDER (Custom z wypełnieniem)
        ======================================== */
     input[type="range"] {
       -webkit-appearance: none;
@@ -551,6 +574,14 @@
       background: transparent;
       cursor: pointer;
       flex: 1;
+      position: relative;
+    }
+
+    .range-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
     }
 
     input[type="range"]::-webkit-slider-track {
@@ -566,11 +597,12 @@
       height: 18px;
       background: white;
       border-radius: 50%;
-      margin-top: -6px;
       box-shadow: 
         0 2px 8px rgba(0, 0, 0, 0.3),
         0 0 16px rgba(50, 184, 198, 0.4);
       transition: transform var(--transition-fast);
+      position: relative;
+      z-index: 2;
     }
 
     input[type="range"]::-webkit-slider-thumb:hover {
@@ -595,30 +627,117 @@
         0 0 16px rgba(50, 184, 198, 0.4);
     }
 
+    .range-fill {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 6px;
+      background: linear-gradient(90deg, var(--cyan-glow), var(--teal-deep));
+      border-radius: 3px;
+      pointer-events: none;
+      width: 0%;
+      transition: width 0.1s ease;
+      z-index: 1;
+    }
+
     /* ========================================
-       SCENE SELECTOR
+       ARCHITEKT PRZESTRZENI - COLLAPSIBLE
        ======================================== */
+    .architect-panel {
+      overflow: hidden;
+    }
+
+    .architect-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-lg);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      border-radius: 24px;
+      margin-bottom: 0;
+    }
+
+    .architect-header:hover {
+      background: rgba(50, 184, 198, 0.03);
+    }
+
+    .architect-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .architect-icon {
+      font-size: 1.5rem;
+    }
+
+    .architect-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .architect-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .expand-icon {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      transition: transform var(--transition-normal);
+    }
+
+    .architect-panel.expanded .expand-icon {
+      transform: rotate(180deg);
+    }
+
+    .architect-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height var(--transition-slow);
+    }
+
+    .architect-panel.expanded .architect-content {
+      max-height: 3000px;
+    }
+
+    .architect-inner {
+      padding: 0 var(--space-lg) var(--space-lg) var(--space-lg);
+    }
+
+    /* Scene List */
     .scene-list {
       display: flex;
       flex-direction: column;
       gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
     }
 
     .scene-item {
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all var(--transition-normal);
+    }
+
+    .scene-header {
       display: flex;
       align-items: center;
       gap: var(--space-md);
       padding: var(--space-md);
-      border-radius: 12px;
       cursor: pointer;
       transition: all var(--transition-normal);
     }
 
-    .scene-item:hover {
+    .scene-header:hover {
       background: rgba(50, 184, 198, 0.05);
     }
 
-    .scene-item.selected {
+    .scene-item.selected .scene-header {
       background: rgba(50, 184, 198, 0.08);
       border-left: 3px solid var(--cyan-glow);
       padding-left: calc(var(--space-md) - 3px);
@@ -639,23 +758,6 @@
 
     .scene-item.selected .scene-radio {
       border-color: var(--cyan-glow);
-    }
-
-    .scene-item.selected .scene-radio::before {
-      content: '×';
-      position: absolute;
-      font-size: 10px;
-      color: var(--cyan-glow);
-      opacity: 0;
-      transition: opacity var(--transition-fast);
-    }
-
-    .scene-item.selected:hover .scene-radio::before {
-      opacity: 1;
-    }
-
-    .scene-item.selected:hover .scene-radio::after {
-      opacity: 0.5;
     }
 
     .scene-radio::after {
@@ -683,17 +785,47 @@
       font-size: 0.95rem;
     }
 
-    .scene-volume {
-      width: 100px;
+    .scene-expand-icon {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      transition: transform var(--transition-fast);
     }
 
-    /* ========================================
-       OBJECTS LIST
-       ======================================== */
+    .scene-item.expanded .scene-expand-icon {
+      transform: rotate(180deg);
+    }
+
+    .scene-details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height var(--transition-normal);
+      padding: 0 var(--space-md);
+    }
+
+    .scene-item.expanded .scene-details {
+      max-height: 100px;
+      padding: 0 var(--space-md) var(--space-md) calc(var(--space-md) + 20px + var(--space-md));
+    }
+
+    .scene-volume-control {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-top: var(--space-sm);
+    }
+
+    .scene-volume-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      min-width: 70px;
+    }
+
+    /* Objects List */
     .objects-list {
       display: flex;
       flex-direction: column;
       gap: var(--space-md);
+      margin-bottom: var(--space-xl);
     }
 
     .object-item {
@@ -781,6 +913,99 @@
       flex: 1;
     }
 
+    /* Timer Section */
+    .timer-section {
+      padding: var(--space-lg);
+      background: rgba(99, 102, 241, 0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(99, 102, 241, 0.1);
+    }
+
+    .timer-header {
+      text-align: center;
+      margin-bottom: var(--space-md);
+    }
+
+    .timer-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-xs);
+    }
+
+    .timer-display {
+      font-family: var(--font-mono);
+      font-size: 2.5rem;
+      color: var(--violet-mist);
+      margin-bottom: var(--space-md);
+    }
+
+    .timer-display.active {
+      color: var(--cyan-glow);
+    }
+
+    .timer-presets {
+      display: flex;
+      gap: var(--space-sm);
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: var(--space-md);
+    }
+
+    .btn-timer-preset {
+      padding: var(--space-sm) var(--space-md);
+      background: var(--elevated);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-timer-preset:hover {
+      border-color: var(--violet-mist);
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .btn-timer-preset.active {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--violet-mist);
+      color: var(--violet-mist);
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: var(--space-sm);
+      justify-content: center;
+    }
+
+    .btn-timer {
+      padding: var(--space-sm) var(--space-lg);
+      background: var(--elevated);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-timer:hover {
+      border-color: var(--violet-mist);
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .btn-timer.active {
+      background: linear-gradient(135deg, var(--violet-mist), var(--magenta-pulse));
+      border-color: var(--violet-mist);
+      color: white;
+      box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+    }
+
     /* ========================================
        LOADING STATE
        ======================================== */
@@ -816,7 +1041,7 @@
        ======================================== */
     .status-message {
       position: fixed;
-      bottom: 20px;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--surface);
@@ -829,6 +1054,7 @@
       transition: opacity var(--transition-normal);
       pointer-events: none;
       z-index: 100;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
 
     .status-message.visible {
@@ -841,7 +1067,7 @@
     .audio-prompt {
       position: fixed;
       inset: 0;
-      background: rgba(10, 14, 20, 0.95);
+      background: var(--deep-void);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -956,7 +1182,7 @@
       }
     }
 
-    /* Reduced Motion - dla osób z wrażliwością na animacje */
+    /* Reduced Motion */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -986,7 +1212,7 @@
       }
     }
 
-    /* Focus visible - dla nawigacji klawiaturą */
+    /* Focus visible */
     :focus-visible {
       outline: 2px solid var(--cyan-glow);
       outline-offset: 2px;
@@ -1009,9 +1235,9 @@
   <div class="audio-prompt" id="audioPrompt">
     <div class="audio-prompt-content">
       <div class="audio-prompt-icon"></div>
-      <h1 class="audio-prompt-title">Przestrzeń Relaksu</h1>
+      <h1 class="audio-prompt-title">Przestrzeń relaksu</h1>
       <p class="audio-prompt-text">
-        Załóż słuchawki i pozwól dźwiękom otoczyć Cię ze wszystkich stron.
+        Załóż słuchawki i pozwól dźwiękom otoczyć cię ze wszystkich stron.
       </p>
       <button class="btn-start" id="btnStart">Wejdź w ciszę</button>
     </div>
@@ -1024,11 +1250,14 @@
     <header class="header">
       <div class="logo">
         <span class="logo-icon">🎧</span>
-        <span>Przestrzeń Relaksu</span>
+        <span>Przestrzeń relaksu</span>
       </div>
       <div class="master-volume">
         <span>🔊</span>
-        <input type="range" id="masterVolume" min="0" max="100" value="80" aria-label="Głośność główna">
+        <div class="range-wrapper">
+          <div class="range-fill" id="masterVolumeFill"></div>
+          <input type="range" id="masterVolume" min="0" max="100" value="80" aria-label="Głośność główna">
+        </div>
       </div>
     </header>
 
@@ -1039,19 +1268,21 @@
       </div>
     </section>
 
-    <!-- Voice Controls -->
-    <section class="glass-panel voice-controls">
-      <h2 class="voice-title" id="voiceTitle">Wybierz sesję</h2>
+    <!-- PANEL MEDYTACJI -->
+    <section class="glass-panel meditation-panel">
+      <h2 class="meditation-title" id="meditationTitle">Wybierz sesję</h2>
       
       <div class="playback-buttons" role="group" aria-label="Kontrola odtwarzania">
         <button class="btn-secondary" id="btnStop" aria-label="Zatrzymaj">■</button>
         <button class="btn-play" id="btnPlay" aria-label="Odtwórz">▶</button>
-        <button class="btn-secondary" id="btnPause" aria-label="Pauza" style="display:none;">‖</button>
       </div>
       
       <div class="volume-control">
         <span class="volume-icon">🔊</span>
-        <input type="range" id="voiceVolume" min="0" max="100" value="100" aria-label="Głośność sesji">
+        <div class="range-wrapper">
+          <div class="range-fill" id="voiceVolumeFill"></div>
+          <input type="range" id="voiceVolume" min="0" max="100" value="100" aria-label="Głośność sesji">
+        </div>
         <span class="volume-value" id="voiceVolumeValue">100%</span>
       </div>
       
@@ -1076,25 +1307,66 @@
         <span class="progress-time" id="totalTime">00:00</span>
       </div>
       
+      <div class="sync-toggle">
+        <span style="font-size: 0.85rem;">Synchronizuj przestrzeń z końcem medytacji</span>
+        <div class="toggle-switch" id="syncToggle" role="switch" aria-checked="false" aria-label="Synchronizacja" tabindex="0"></div>
+      </div>
+      
       <div class="loading-indicator" id="voiceLoading" role="status" aria-live="polite">
         <div class="spinner"></div>
         <span>Przygotowuję przestrzeń...</span>
       </div>
     </section>
 
-    <!-- Scene Selector -->
-    <section class="glass-panel" role="region" aria-labelledby="scene-title">
-      <h3 class="panel-title" id="scene-title">🌍 Wybierz Przestrzeń</h3>
-      <div class="scene-list" id="sceneList" role="radiogroup">
-        <!-- Scene items will be generated by JS -->
+    <!-- ARCHITEKT PRZESTRZENI -->
+    <section class="glass-panel architect-panel" id="architectPanel">
+      <div class="architect-header" id="architectHeader">
+        <div class="architect-title-wrapper">
+          <span class="architect-icon">🏗️</span>
+          <div>
+            <div class="architect-title">Architekt przestrzeni</div>
+            <div class="architect-subtitle">Zbuduj swoją przestrzeń dźwiękową</div>
+          </div>
+        </div>
+        <span class="expand-icon">▼</span>
       </div>
-    </section>
 
-    <!-- Sound Objects -->
-    <section class="glass-panel" role="region" aria-labelledby="objects-title">
-      <h3 class="panel-title" id="objects-title">🔮 Dodaj Dźwięki</h3>
-      <div class="objects-list" id="objectsList">
-        <!-- Object items will be generated by JS -->
+      <div class="architect-content">
+        <div class="architect-inner">
+          
+          <!-- Scenes -->
+          <h3 class="panel-title">🌍 Wybierz przestrzeń tła</h3>
+          <div class="scene-list" id="sceneList" role="radiogroup">
+            <!-- Scene items will be generated by JS -->
+          </div>
+
+          <!-- Objects -->
+          <h3 class="panel-title">🔮 Dodaj dźwięki</h3>
+          <div class="objects-list" id="objectsList">
+            <!-- Object items will be generated by JS -->
+          </div>
+
+          <!-- Timer -->
+          <div class="timer-section">
+            <div class="timer-header">
+              <div class="timer-label">Czas trwania przestrzeni</div>
+              <div class="timer-display" id="timerDisplay">--:--</div>
+            </div>
+            <div class="timer-presets">
+              <button class="btn-timer-preset" data-minutes="5">5 min</button>
+              <button class="btn-timer-preset" data-minutes="10">10 min</button>
+              <button class="btn-timer-preset" data-minutes="15">15 min</button>
+              <button class="btn-timer-preset" data-minutes="20">20 min</button>
+              <button class="btn-timer-preset" data-minutes="30">30 min</button>
+              <button class="btn-timer-preset" data-minutes="60">60 min</button>
+            </div>
+            <div class="timer-controls">
+              <button class="btn-timer" id="btnTimerStart">Uruchom timer</button>
+              <button class="btn-timer" id="btnTimerStop" style="display:none;">Zatrzymaj timer</button>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
 
@@ -1109,29 +1381,31 @@
     // ========================================
     const CONFIG = {
       sessions: [
-        { id: 'body-scan', name: 'Podróż przez Ciało', icon: '🧘', file: 'assets/audio/voice/body-scan.mp3', description: 'Delikatna wędrówka uwagi przez każdą część ciała.' },
-        { id: 'breath-sitting', name: 'Spokojny Oddech', icon: '🌬️', file: 'assets/audio/voice/breath-sitting.mp3', description: 'Powrót do naturalnego rytmu oddechu.' },
-        { id: 'sounds-thoughts', name: 'Przestrzeń Myśli', icon: '🎵', file: 'assets/audio/voice/sounds-thoughts.mp3', description: 'Obserwuj myśli jak chmury na niebie.' },
-        { id: 'relaxation', name: 'Głębokie Rozluźnienie', icon: '💆', file: 'assets/audio/voice/relaxation.mp3', description: 'Systematyczne uwalnianie napięć ciała.' },
-        { id: 'visualization', name: 'Wewnętrzna Podróż', icon: '🌌', file: 'assets/audio/voice/visualization.mp3', description: 'Wizualizacja prowadząca do miejsca spokoju.' }
+        { id: 'body-scan', name: 'Podróż przez ciało', icon: '🧘', file: 'assets/audio/voice/body-scan.mp3', description: 'Delikatna wędrówka uwagi przez każdą część ciała.' },
+        { id: 'breath-sitting', name: 'Spokojny oddech', icon: '🌬️', file: 'assets/audio/voice/breath-sitting.mp3', description: 'Powrót do naturalnego rytmu oddechu.' },
+        { id: 'sounds-thoughts', name: 'Przestrzeń myśli', icon: '🎵', file: 'assets/audio/voice/sounds-thoughts.mp3', description: 'Obserwuj myśli jak chmury na niebie.' },
+        { id: 'relaxation', name: 'Głębokie rozluźnienie', icon: '💆', file: 'assets/audio/voice/relaxation.mp3', description: 'Systematyczne uwalnianie napięć ciała.' },
+        { id: 'visualization', name: 'Wewnętrzna podróż', icon: '🌌', file: 'assets/audio/voice/visualization.mp3', description: 'Wizualizacja prowadząca do miejsca spokoju.' }
       ],
       scenes: [
-        { id: 'beach', name: 'Plaża o Zmierzchu', icon: '🏖️', file: 'assets/audio/scenes/beach.mp3', description: 'Ciepły piasek, delikatne fale, odległy śpiew mew' },
-        { id: 'mountain-meadow', name: 'Górska Polana', icon: '🏔️', file: 'assets/audio/scenes/mountain-meadow.mp3', description: 'Szum wiatru w trawach, przestrzeń i cisza' },
-        { id: 'summer-forest', name: 'Letni Las', icon: '🌲', file: 'assets/audio/scenes/summer-forest.mp3', description: 'Szelest liści, śpiew ptaków, zapach żywicy' },
-        { id: 'night-cicadas', name: 'Nocne Cykady', icon: '🌙', file: 'assets/audio/scenes/night-cicadas.mp3', description: 'Ciepła letnia noc, rytmiczny chór owadów' }
+        { id: 'beach', name: 'Plaża o zmierzchu', icon: '🏖️', file: 'assets/audio/scenes/beach.mp3', description: 'Ciepły piasek, delikatne fale, odległy śpiew mew' },
+        { id: 'mountain-meadow', name: 'Górska polana', icon: '🏔️', file: 'assets/audio/scenes/mountain-meadow.mp3', description: 'Szum wiatru w trawach, przestrzeń i cisza' },
+        { id: 'summer-forest', name: 'Letni las', icon: '🌲', file: 'assets/audio/scenes/summer-forest.mp3', description: 'Szelest liści, śpiew ptaków, zapach żywicy' },
+        { id: 'night-cicadas', name: 'Nocne cykady', icon: '🌙', file: 'assets/audio/scenes/night-cicadas.mp3', description: 'Ciepła letnia noc, rytmiczny chór owadów' }
       ],
       objects: [
-        { id: 'bell', name: 'Tybetańska Misa', icon: '🔔', file: 'assets/audio/objects/bell.mp3', description: 'Rezonujący dźwięk prowadzący do skupienia' },
-        { id: 'clock', name: 'Stary Zegar', icon: '🕰️', file: 'assets/audio/objects/clock.mp3', description: 'Miarowy rytm odmierzający chwile ciszy' },
-        { id: 'blackbird', name: 'Śpiew Kosa', icon: '🐦', file: 'assets/audio/objects/blackbird.mp3', description: 'Melodia poranka, naturalny budzik duszy' },
-        { id: 'stream', name: 'Leśny Strumień', icon: '💧', file: 'assets/audio/objects/stream.mp3', description: 'Nieustanny przepływ, symbol puszczania' }
+        { id: 'bell', name: 'Tybetańska misa', icon: '🔔', file: 'assets/audio/objects/bell.mp3', description: 'Rezonujący dźwięk prowadzący do skupienia' },
+        { id: 'clock', name: 'Stary zegar', icon: '🕰️', file: 'assets/audio/objects/clock.mp3', description: 'Miarowy rytm odmierzający chwile ciszy' },
+        { id: 'blackbird', name: 'Śpiew kosa', icon: '🐦', file: 'assets/audio/objects/blackbird.mp3', description: 'Melodia poranka, naturalny budzik duszy' },
+        { id: 'stream', name: 'Leśny strumień', icon: '💧', file: 'assets/audio/objects/stream.mp3', description: 'Nieustanny przepływ, symbol puszczania' }
       ],
       hrtfPositions: {
         left: { angle: -60, x: -0.866, z: -0.5 },
         center: { angle: 0, x: 0, z: -1 },
         right: { angle: 60, x: 0.866, z: -0.5 }
-      }
+      },
+      fadeInTime: 0.15,
+      fadeOutTime: 0.8
     };
 
     // ========================================
@@ -1140,8 +1414,10 @@
     const state = {
       audioContext: null,
       masterGain: null,
+      lowShelfFilter: null,
       
-      voice: {
+      // PANEL MEDYTACJI
+      meditation: {
         selected: CONFIG.sessions[0].id,
         buffer: null,
         source: null,
@@ -1154,25 +1430,39 @@
         duration: 0,
         volume: 1,
         hrtfEnabled: true,
-        position: 'center'
+        position: 'center',
+        syncWithSpace: false  // Czy przestrzeń kończy się z końcem medytacji
       },
       
-      scene: {
-        active: null,
-        sources: {},
-        gains: {},
-        buffers: {},
-        volumes: {} // per-scena volume
+      // ARCHITEKT PRZESTRZENI
+      architect: {
+        isExpanded: false,
+        scene: {
+          active: null,
+          sources: {},
+          gains: {},
+          buffers: {},
+          volumes: {},
+          expanded: {}
+        },
+        objects: {},
+        timer: {
+          duration: 0,
+          remaining: 0,
+          isRunning: false,
+          intervalId: null,
+          selectedPreset: null,
+          startSoundBuffer: null,
+          endSoundBuffer: null
+        }
       },
-      
-      objects: {},
       
       masterVolume: 0.8
     };
 
     // Initialize objects state
     CONFIG.objects.forEach(obj => {
-      state.objects[obj.id] = {
+      state.architect.objects[obj.id] = {
         enabled: false,
         buffer: null,
         source: null,
@@ -1200,8 +1490,9 @@
       setTimeout(() => el.classList.remove('visible'), duration);
     }
 
-    function degToRad(deg) {
-      return deg * (Math.PI / 180);
+    function updateRangeFill(rangeInput, fillElement) {
+      const value = (rangeInput.value / rangeInput.max) * 100;
+      fillElement.style.width = `${value}%`;
     }
 
     // ========================================
@@ -1212,33 +1503,39 @@
       
       state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
       
-      // Master gain
       state.masterGain = state.audioContext.createGain();
       state.masterGain.gain.value = state.masterVolume;
-      state.masterGain.connect(state.audioContext.destination);
       
-      // Voice nodes - z możliwością bypass HRTF
-      state.voice.gainNode = state.audioContext.createGain();
-      state.voice.pannerNode = state.audioContext.createPanner();
-      state.voice.pannerNode.panningModel = 'HRTF';
-      state.voice.pannerNode.distanceModel = 'inverse';
-      state.voice.pannerNode.refDistance = 1;
-      state.voice.pannerNode.maxDistance = 10000;
-      state.voice.pannerNode.rolloffFactor = 1;
+      state.lowShelfFilter = state.audioContext.createBiquadFilter();
+      state.lowShelfFilter.type = 'lowshelf';
+      state.lowShelfFilter.frequency.value = 200;
+      state.lowShelfFilter.gain.value = -6;
       
-      updateVoicePosition(state.voice.position);
+      state.masterGain.connect(state.lowShelfFilter);
+      state.lowShelfFilter.connect(state.audioContext.destination);
       
-      // Domyślnie HRTF ON: gain -> panner -> master
-      state.voice.gainNode.connect(state.voice.pannerNode);
-      state.voice.pannerNode.connect(state.masterGain);
+      // Meditation nodes
+      state.meditation.gainNode = state.audioContext.createGain();
+      state.meditation.pannerNode = state.audioContext.createPanner();
+      state.meditation.pannerNode.panningModel = 'HRTF';
+      state.meditation.pannerNode.distanceModel = 'inverse';
+      state.meditation.pannerNode.refDistance = 1;
+      state.meditation.pannerNode.maxDistance = 10000;
+      state.meditation.pannerNode.rolloffFactor = 1;
       
-      // Scene gains - per scena
+      updateMeditationPosition(state.meditation.position);
+      
+      state.meditation.gainNode.connect(state.meditation.pannerNode);
+      state.meditation.pannerNode.connect(state.masterGain);
+      
+      // Scene gains
       CONFIG.scenes.forEach(scene => {
         const gain = state.audioContext.createGain();
         gain.gain.value = 0;
         gain.connect(state.masterGain);
-        state.scene.gains[scene.id] = gain;
-        state.scene.volumes[scene.id] = 0.5; // domyślny volume per scena
+        state.architect.scene.gains[scene.id] = gain;
+        state.architect.scene.volumes[scene.id] = 0.5;
+        state.architect.scene.expanded[scene.id] = false;
       });
       
       // Object nodes
@@ -1252,11 +1549,13 @@
         gain.connect(panner);
         panner.connect(state.masterGain);
         
-        state.objects[obj.id].gainNode = gain;
-        state.objects[obj.id].pannerNode = panner;
+        state.architect.objects[obj.id].gainNode = gain;
+        state.architect.objects[obj.id].pannerNode = panner;
         
         updateObjectPosition(obj.id, 'center');
       });
+      
+      loadTimerSounds();
       
       console.log('Audio context initialized');
     }
@@ -1276,22 +1575,23 @@
       }
     }
 
-    async function loadVoiceSession(sessionId) {
+    async function loadMeditationSession(sessionId) {
       const session = CONFIG.sessions.find(s => s.id === sessionId);
       if (!session) return;
       
+      showStatus(`Ładuję: ${session.name}...`);
       document.getElementById('voiceLoading').classList.add('visible');
       
       const buffer = await loadAudioBuffer(session.file);
       
       if (buffer) {
-        state.voice.buffer = buffer;
-        state.voice.duration = buffer.duration;
+        state.meditation.buffer = buffer;
+        state.meditation.duration = buffer.duration;
         document.getElementById('totalTime').textContent = formatTime(buffer.duration);
         showStatus(`${session.name} — gotowe`);
       } else {
-        state.voice.buffer = null;
-        state.voice.duration = 0;
+        state.meditation.buffer = null;
+        state.meditation.duration = 0;
         document.getElementById('totalTime').textContent = '--:--';
         showStatus(`Nie mogę odnaleźć: ${session.name}`, 3000);
       }
@@ -1299,33 +1599,49 @@
       document.getElementById('voiceLoading').classList.remove('visible');
     }
 
+    async function loadTimerSounds() {
+      state.architect.timer.startSoundBuffer = await loadAudioBuffer('assets/audio/timer/start.mp3');
+      state.architect.timer.endSoundBuffer = await loadAudioBuffer('assets/audio/timer/end.mp3');
+    }
+
+    function playTimerSound(buffer) {
+      if (!buffer) return;
+      const source = state.audioContext.createBufferSource();
+      source.buffer = buffer;
+      source.connect(state.masterGain);
+      source.start();
+    }
+
     // ========================================
-    // VOICE PLAYBACK
+    // MEDITATION PLAYBACK
     // ========================================
-    function playVoice() {
-      if (!state.voice.buffer) {
+    function playMeditation() {
+      if (!state.meditation.buffer) {
         showStatus('Wybierz najpierw sesję');
         return;
       }
       
-      if (state.voice.isPlaying) return;
+      if (state.meditation.isPlaying) return;
       
-      // Create new source
-      state.voice.source = state.audioContext.createBufferSource();
-      state.voice.source.buffer = state.voice.buffer;
-      state.voice.source.connect(state.voice.gainNode);
+      state.meditation.source = state.audioContext.createBufferSource();
+      state.meditation.source.buffer = state.meditation.buffer;
+      state.meditation.source.connect(state.meditation.gainNode);
       
-      // Calculate offset
-      const offset = state.voice.isPaused ? state.voice.pauseTime : 0;
+      const offset = state.meditation.isPaused ? state.meditation.pauseTime : 0;
       
-      state.voice.source.start(0, offset);
-      state.voice.startTime = state.audioContext.currentTime - offset;
-      state.voice.isPlaying = true;
-      state.voice.isPaused = false;
+      state.meditation.source.start(0, offset);
+      state.meditation.startTime = state.audioContext.currentTime - offset;
+      state.meditation.isPlaying = true;
+      state.meditation.isPaused = false;
       
-      state.voice.source.onended = () => {
-        if (state.voice.isPlaying) {
-          stopVoice();
+      state.meditation.source.onended = () => {
+        if (state.meditation.isPlaying) {
+          stopMeditation();
+          
+          // Jeśli sync włączony, zatrzymaj też przestrzeń
+          if (state.meditation.syncWithSpace) {
+            stopAllSpace();
+          }
         }
       };
       
@@ -1333,32 +1649,32 @@
       requestAnimationFrame(updateProgress);
     }
 
-    function pauseVoice() {
-      if (!state.voice.isPlaying) return;
+    function pauseMeditation() {
+      if (!state.meditation.isPlaying) return;
       
-      const elapsed = state.audioContext.currentTime - state.voice.startTime;
-      state.voice.pauseTime = elapsed;
+      const elapsed = state.audioContext.currentTime - state.meditation.startTime;
+      state.meditation.pauseTime = elapsed;
       
-      state.voice.source.stop();
-      state.voice.source.disconnect();
-      state.voice.source = null;
+      state.meditation.source.stop();
+      state.meditation.source.disconnect();
+      state.meditation.source = null;
       
-      state.voice.isPlaying = false;
-      state.voice.isPaused = true;
+      state.meditation.isPlaying = false;
+      state.meditation.isPaused = true;
       
       updatePlayButton(false);
     }
 
-    function stopVoice() {
-      if (state.voice.source) {
-        state.voice.source.stop();
-        state.voice.source.disconnect();
-        state.voice.source = null;
+    function stopMeditation() {
+      if (state.meditation.source) {
+        state.meditation.source.stop();
+        state.meditation.source.disconnect();
+        state.meditation.source = null;
       }
       
-      state.voice.isPlaying = false;
-      state.voice.isPaused = false;
-      state.voice.pauseTime = 0;
+      state.meditation.isPlaying = false;
+      state.meditation.isPaused = false;
+      state.meditation.pauseTime = 0;
       
       updatePlayButton(false);
       updateProgressBar(0);
@@ -1366,10 +1682,10 @@
     }
 
     function updateProgress() {
-      if (!state.voice.isPlaying) return;
+      if (!state.meditation.isPlaying) return;
       
-      const elapsed = state.audioContext.currentTime - state.voice.startTime;
-      const progress = Math.min(elapsed / state.voice.duration, 1);
+      const elapsed = state.audioContext.currentTime - state.meditation.startTime;
+      const progress = Math.min(elapsed / state.meditation.duration, 1);
       
       updateProgressBar(progress);
       document.getElementById('currentTime').textContent = formatTime(elapsed);
@@ -1382,7 +1698,7 @@
     function updateProgressBar(progress) {
       const fill = document.getElementById('progressFill');
       fill.style.width = `${progress * 100}%`;
-      if (state.voice.isPlaying) {
+      if (state.meditation.isPlaying) {
         fill.classList.add('playing');
       } else {
         fill.classList.remove('playing');
@@ -1396,65 +1712,59 @@
       btn.classList.toggle('playing', isPlaying);
     }
 
-    function updateVoicePosition(position) {
+    function updateMeditationPosition(position) {
       const pos = CONFIG.hrtfPositions[position];
-      if (!pos || !state.voice.pannerNode) return;
+      if (!pos || !state.meditation.pannerNode) return;
       
-      state.voice.pannerNode.positionX.setValueAtTime(pos.x, state.audioContext?.currentTime || 0);
-      state.voice.pannerNode.positionY.setValueAtTime(0, state.audioContext?.currentTime || 0);
-      state.voice.pannerNode.positionZ.setValueAtTime(pos.z, state.audioContext?.currentTime || 0);
-      state.voice.position = position;
+      state.meditation.pannerNode.positionX.setValueAtTime(pos.x, state.audioContext?.currentTime || 0);
+      state.meditation.pannerNode.positionY.setValueAtTime(0, state.audioContext?.currentTime || 0);
+      state.meditation.pannerNode.positionZ.setValueAtTime(pos.z, state.audioContext?.currentTime || 0);
+      state.meditation.position = position;
     }
 
     function toggleHRTF(enabled) {
-      state.voice.hrtfEnabled = enabled;
-      if (!state.voice.gainNode || !state.voice.pannerNode || !state.masterGain) return;
+      state.meditation.hrtfEnabled = enabled;
+      if (!state.meditation.gainNode || !state.meditation.pannerNode || !state.masterGain) return;
       
-      // Dynamiczne przełączanie routingu
       if (enabled) {
-        // HRTF ON: gain -> panner -> master
-        state.voice.gainNode.disconnect();
-        state.voice.gainNode.connect(state.voice.pannerNode);
-        // panner już jest podłączony do master
-        updateVoicePosition(state.voice.position);
+        state.meditation.gainNode.disconnect();
+        state.meditation.gainNode.connect(state.meditation.pannerNode);
+        updateMeditationPosition(state.meditation.position);
       } else {
-        // HRTF OFF (bypass): gain -> master (pomijamy panner)
-        state.voice.gainNode.disconnect();
-        state.voice.gainNode.connect(state.masterGain);
+        state.meditation.gainNode.disconnect();
+        state.meditation.gainNode.connect(state.masterGain);
       }
     }
 
     // ========================================
-    // SCENE PLAYBACK
+    // SPACE (ARCHITECT) PLAYBACK
     // ========================================
     async function selectScene(sceneId) {
       const scene = CONFIG.scenes.find(s => s.id === sceneId);
       if (!scene) return;
       
-      // Stop current scene
-      if (state.scene.active && state.scene.sources[state.scene.active]) {
-        const oldSceneId = state.scene.active;
-        const oldSource = state.scene.sources[oldSceneId];
-        const oldGain = state.scene.gains[oldSceneId];
+      showStatus(`Przygotowuję: ${scene.name}...`);
+      
+      if (state.architect.scene.active && state.architect.scene.sources[state.architect.scene.active]) {
+        const oldSceneId = state.architect.scene.active;
+        const oldSource = state.architect.scene.sources[oldSceneId];
+        const oldGain = state.architect.scene.gains[oldSceneId];
         
-        // Fade out
-        oldGain.gain.setTargetAtTime(0, state.audioContext.currentTime, 0.5);
+        oldGain.gain.setTargetAtTime(0, state.audioContext.currentTime, CONFIG.fadeOutTime);
         setTimeout(() => {
           if (oldSource) {
             oldSource.stop();
             oldSource.disconnect();
-            delete state.scene.sources[oldSceneId];
+            delete state.architect.scene.sources[oldSceneId];
           }
-        }, 1000);
+        }, CONFIG.fadeOutTime * 1000 * 3);
       }
       
-      // Load and play new scene
-      if (!state.scene.buffers[sceneId]) {
-        showStatus(`Przygotowuję: ${scene.name}...`);
-        state.scene.buffers[sceneId] = await loadAudioBuffer(scene.file);
+      if (!state.architect.scene.buffers[sceneId]) {
+        state.architect.scene.buffers[sceneId] = await loadAudioBuffer(scene.file);
       }
       
-      const buffer = state.scene.buffers[sceneId];
+      const buffer = state.architect.scene.buffers[sceneId];
       if (!buffer) {
         showStatus(`Nie mogę odnaleźć tej przestrzeni`, 3000);
         return;
@@ -1463,65 +1773,64 @@
       const source = state.audioContext.createBufferSource();
       source.buffer = buffer;
       source.loop = true;
-      source.connect(state.scene.gains[sceneId]);
+      source.connect(state.architect.scene.gains[sceneId]);
       
-      // Używamy per-scena volume
-      const targetVolume = state.scene.volumes[sceneId] ?? 0.5;
-      state.scene.gains[sceneId].gain.setValueAtTime(0, state.audioContext.currentTime);
-      state.scene.gains[sceneId].gain.setTargetAtTime(targetVolume, state.audioContext.currentTime, 0.5);
+      const targetVolume = state.architect.scene.volumes[sceneId] ?? 0.5;
+      state.architect.scene.gains[sceneId].gain.setValueAtTime(0, state.audioContext.currentTime);
+      state.architect.scene.gains[sceneId].gain.setTargetAtTime(targetVolume, state.audioContext.currentTime, CONFIG.fadeInTime);
       
       source.start();
-      state.scene.sources[sceneId] = source;
-      state.scene.active = sceneId;
+      state.architect.scene.sources[sceneId] = source;
+      state.architect.scene.active = sceneId;
       
       updateSceneUI();
       showStatus(`${scene.name} — jesteś tutaj`);
     }
 
     function updateSceneVolume(sceneId, volume) {
-      // Zapisz per-scena volume
-      state.scene.volumes[sceneId] = volume;
+      state.architect.scene.volumes[sceneId] = volume;
       
-      // Aktualizuj gain tylko jeśli ta scena jest aktywna
-      if (state.scene.gains[sceneId] && state.scene.active === sceneId) {
-        state.scene.gains[sceneId].gain.setTargetAtTime(volume, state.audioContext.currentTime, 0.1);
+      if (state.architect.scene.gains[sceneId] && state.architect.scene.active === sceneId) {
+        state.architect.scene.gains[sceneId].gain.setTargetAtTime(volume, state.audioContext.currentTime, 0.1);
       }
     }
 
     function stopScene(sceneId) {
-      if (!state.scene.sources[sceneId]) return;
+      if (!state.architect.scene.sources[sceneId]) return;
       
-      const source = state.scene.sources[sceneId];
-      const gain = state.scene.gains[sceneId];
+      const source = state.architect.scene.sources[sceneId];
+      const gain = state.architect.scene.gains[sceneId];
       
-      // Fade out
-      gain.gain.setTargetAtTime(0, state.audioContext.currentTime, 0.5);
+      gain.gain.setTargetAtTime(0, state.audioContext.currentTime, CONFIG.fadeOutTime);
       
       setTimeout(() => {
         if (source) {
           source.stop();
           source.disconnect();
-          delete state.scene.sources[sceneId];
+          delete state.architect.scene.sources[sceneId];
         }
-      }, 800);
+      }, CONFIG.fadeOutTime * 1000 * 3);
       
-      state.scene.active = null;
+      state.architect.scene.active = null;
       updateSceneUI();
-      showStatus('Scena wyłączona');
+      showStatus('Przestrzeń wyłączona');
     }
 
-    // ========================================
-    // OBJECT PLAYBACK
-    // ========================================
+    function toggleSceneExpanded(sceneId) {
+      state.architect.scene.expanded[sceneId] = !state.architect.scene.expanded[sceneId];
+      updateSceneUI();
+    }
+
     async function toggleObject(objectId, enabled) {
       const obj = CONFIG.objects.find(o => o.id === objectId);
-      const objState = state.objects[objectId];
+      const objState = state.architect.objects[objectId];
       if (!obj || !objState) return;
       
       objState.enabled = enabled;
       
       if (enabled) {
-        // Load buffer if needed
+        showStatus(`Dodaję: ${obj.name}...`);
+        
         if (!objState.buffer) {
           objState.buffer = await loadAudioBuffer(obj.file);
         }
@@ -1533,30 +1842,28 @@
           return;
         }
         
-        // Create and start source
         const source = state.audioContext.createBufferSource();
         source.buffer = objState.buffer;
         source.loop = true;
         source.connect(objState.gainNode);
         
         objState.gainNode.gain.setValueAtTime(0, state.audioContext.currentTime);
-        objState.gainNode.gain.setTargetAtTime(objState.volume, state.audioContext.currentTime, 0.3);
+        objState.gainNode.gain.setTargetAtTime(objState.volume, state.audioContext.currentTime, CONFIG.fadeInTime);
         
         source.start();
         objState.source = source;
         
         showStatus(`${obj.icon} ${obj.name}`);
       } else {
-        // Stop source
         if (objState.source) {
-          objState.gainNode.gain.setTargetAtTime(0, state.audioContext.currentTime, 0.3);
+          objState.gainNode.gain.setTargetAtTime(0, state.audioContext.currentTime, CONFIG.fadeOutTime);
           setTimeout(() => {
             if (objState.source) {
               objState.source.stop();
               objState.source.disconnect();
               objState.source = null;
             }
-          }, 500);
+          }, CONFIG.fadeOutTime * 1000 * 3);
         }
       }
       
@@ -1564,7 +1871,7 @@
     }
 
     function updateObjectVolume(objectId, volume) {
-      const objState = state.objects[objectId];
+      const objState = state.architect.objects[objectId];
       if (objState) {
         objState.volume = volume;
         if (objState.gainNode && objState.enabled) {
@@ -1574,7 +1881,7 @@
     }
 
     function updateObjectPosition(objectId, position) {
-      const objState = state.objects[objectId];
+      const objState = state.architect.objects[objectId];
       const pos = CONFIG.hrtfPositions[position];
       if (!objState || !pos || !objState.pannerNode) return;
       
@@ -1584,33 +1891,126 @@
       objState.position = position;
     }
 
+    function stopAllSpace() {
+      // Stop scene
+      if (state.architect.scene.active) {
+        stopScene(state.architect.scene.active);
+      }
+      
+      // Stop all objects
+      CONFIG.objects.forEach(obj => {
+        if (state.architect.objects[obj.id].enabled) {
+          toggleObject(obj.id, false);
+        }
+      });
+      
+      // Stop timer
+      if (state.architect.timer.isRunning) {
+        stopTimer();
+      }
+      
+      showStatus('Przestrzeń zatrzymana');
+    }
+
+    // ========================================
+    // TIMER FUNCTIONS
+    // ========================================
+    function startTimer(minutes) {
+      if (state.architect.timer.isRunning) {
+        stopTimer();
+      }
+      
+      state.architect.timer.duration = minutes * 60;
+      state.architect.timer.remaining = state.architect.timer.duration;
+      state.architect.timer.isRunning = true;
+      
+      playTimerSound(state.architect.timer.startSoundBuffer);
+      
+      updateTimerDisplay();
+      showStatus(`Timer przestrzeni: ${minutes} minut`);
+      
+      document.getElementById('btnTimerStart').style.display = 'none';
+      document.getElementById('btnTimerStop').style.display = 'inline-block';
+      document.getElementById('btnTimerStop').classList.add('active');
+      document.getElementById('timerDisplay').classList.add('active');
+      
+      state.architect.timer.intervalId = setInterval(() => {
+        state.architect.timer.remaining--;
+        updateTimerDisplay();
+        
+        if (state.architect.timer.remaining <= 0) {
+          timerFinished();
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (state.architect.timer.intervalId) {
+        clearInterval(state.architect.timer.intervalId);
+        state.architect.timer.intervalId = null;
+      }
+      
+      state.architect.timer.isRunning = false;
+      state.architect.timer.remaining = 0;
+      
+      updateTimerDisplay();
+      
+      document.getElementById('btnTimerStart').style.display = 'inline-block';
+      document.getElementById('btnTimerStop').style.display = 'none';
+      document.getElementById('btnTimerStop').classList.remove('active');
+      document.getElementById('timerDisplay').classList.remove('active');
+      
+      document.querySelectorAll('.btn-timer-preset').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      state.architect.timer.selectedPreset = null;
+    }
+
+    function timerFinished() {
+      stopTimer();
+      
+      playTimerSound(state.architect.timer.endSoundBuffer);
+      
+      showStatus('⏰ Czas przestrzeni dobiegł końca', 4000);
+      
+      // Zatrzymaj wszystkie dźwięki przestrzeni
+      stopAllSpace();
+    }
+
+    function updateTimerDisplay() {
+      const display = document.getElementById('timerDisplay');
+      if (state.architect.timer.isRunning) {
+        display.textContent = formatTime(state.architect.timer.remaining);
+      } else {
+        display.textContent = '--:--';
+      }
+    }
+
     // ========================================
     // UI RENDERING
     // ========================================
     function renderSessionCards() {
       const container = document.getElementById('sessionCards');
       container.innerHTML = CONFIG.sessions.map(session => `
-        <div class="session-card ${state.voice.selected === session.id ? 'selected' : ''}" 
+        <div class="session-card ${state.meditation.selected === session.id ? 'selected' : ''}" 
              data-session="${session.id}"
              role="button"
              tabindex="0"
-             aria-pressed="${state.voice.selected === session.id}"
+             aria-pressed="${state.meditation.selected === session.id}"
              aria-label="${session.name}: ${session.description}">
           <span class="session-icon">${session.icon}</span>
           <span class="session-name">${session.name}</span>
         </div>
       `).join('');
       
-      // Add click and keyboard handlers
       container.querySelectorAll('.session-card').forEach(card => {
         const handleSelect = async () => {
           const sessionId = card.dataset.session;
-          if (sessionId === state.voice.selected) return;
+          if (sessionId === state.meditation.selected) return;
           
-          stopVoice();
-          state.voice.selected = sessionId;
+          stopMeditation();
+          state.meditation.selected = sessionId;
           
-          // Update UI
           container.querySelectorAll('.session-card').forEach(c => {
             c.classList.remove('selected');
             c.setAttribute('aria-pressed', 'false');
@@ -1619,9 +2019,9 @@
           card.setAttribute('aria-pressed', 'true');
           
           const session = CONFIG.sessions.find(s => s.id === sessionId);
-          document.getElementById('voiceTitle').textContent = session.name;
+          document.getElementById('meditationTitle').textContent = session.name;
           
-          await loadVoiceSession(sessionId);
+          await loadMeditationSession(sessionId);
         };
         
         card.addEventListener('click', handleSelect);
@@ -1637,107 +2037,116 @@
     function renderSceneList() {
       const container = document.getElementById('sceneList');
       container.innerHTML = CONFIG.scenes.map(scene => {
-        const volume = Math.round((state.scene.volumes[scene.id] ?? 0.5) * 100);
+        const volume = Math.round((state.architect.scene.volumes[scene.id] ?? 0.5) * 100);
+        const isExpanded = state.architect.scene.expanded[scene.id];
+        const isSelected = state.architect.scene.active === scene.id;
+        
         return `
-          <div class="scene-item ${state.scene.active === scene.id ? 'selected' : ''}" 
-               data-scene="${scene.id}"
-               role="radio"
-               tabindex="0"
-               aria-checked="${state.scene.active === scene.id}"
-               aria-label="${scene.name}: ${scene.description}">
-            <div class="scene-radio" aria-hidden="true"></div>
-            <span class="scene-icon">${scene.icon}</span>
-            <span class="scene-name">${scene.name}</span>
-            <input type="range" class="scene-volume" min="0" max="100" value="${volume}" 
-                   data-scene-volume="${scene.id}"
-                   aria-label="Głośność: ${scene.name}">
+          <div class="scene-item ${isSelected ? 'selected' : ''} ${isExpanded ? 'expanded' : ''}" 
+               data-scene="${scene.id}">
+            <div class="scene-header" data-scene-header="${scene.id}">
+              <div class="scene-radio" aria-hidden="true"></div>
+              <span class="scene-icon">${scene.icon}</span>
+              <span class="scene-name">${scene.name}</span>
+              <span class="scene-expand-icon">▼</span>
+            </div>
+            <div class="scene-details">
+              <div class="scene-volume-control">
+                <span class="scene-volume-label">Głośność:</span>
+                <div class="range-wrapper">
+                  <div class="range-fill scene-range-fill-${scene.id}"></div>
+                  <input type="range" min="0" max="100" value="${volume}" 
+                         data-scene-volume="${scene.id}"
+                         aria-label="Głośność: ${scene.name}">
+                </div>
+              </div>
+            </div>
           </div>
         `;
       }).join('');
       
-      // Add click and keyboard handlers
-      container.querySelectorAll('.scene-item').forEach(item => {
-        const handleSelect = (e) => {
-          if (e.target.tagName === 'INPUT') return;
-          const sceneId = item.dataset.scene;
+      container.querySelectorAll('.scene-header').forEach(header => {
+        header.addEventListener('click', (e) => {
+          const sceneId = header.dataset.sceneHeader;
           
-          // Klik na aktywną scenę = wyłącz ją
-          if (state.scene.active === sceneId) {
+          if (state.architect.scene.active === sceneId) {
             stopScene(sceneId);
           } else {
             selectScene(sceneId);
           }
-        };
-        
-        item.addEventListener('click', handleSelect);
-        item.addEventListener('keydown', (e) => {
-          if (e.target.tagName === 'INPUT') return;
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            const sceneId = item.dataset.scene;
-            if (state.scene.active === sceneId) {
-              stopScene(sceneId);
-            } else {
-              selectScene(sceneId);
-            }
-          }
+          
+          toggleSceneExpanded(sceneId);
         });
       });
       
-      // Volume handlers
-      container.querySelectorAll('.scene-volume').forEach(input => {
+      container.querySelectorAll('[data-scene-volume]').forEach(input => {
+        const sceneId = input.dataset.sceneVolume;
+        const fillEl = container.querySelector(`.scene-range-fill-${sceneId}`);
+        
+        updateRangeFill(input, fillEl);
+        
         input.addEventListener('input', (e) => {
-          const sceneId = e.target.dataset.sceneVolume;
           const volume = e.target.value / 100;
           updateSceneVolume(sceneId, volume);
+          updateRangeFill(input, fillEl);
         });
       });
     }
 
     function updateSceneUI() {
       document.querySelectorAll('.scene-item').forEach(item => {
-        const isSelected = item.dataset.scene === state.scene.active;
+        const sceneId = item.dataset.scene;
+        const isSelected = sceneId === state.architect.scene.active;
+        const isExpanded = state.architect.scene.expanded[sceneId];
+        
         item.classList.toggle('selected', isSelected);
-        item.setAttribute('aria-checked', isSelected);
+        item.classList.toggle('expanded', isExpanded);
       });
     }
 
     function renderObjectsList() {
       const container = document.getElementById('objectsList');
-      container.innerHTML = CONFIG.objects.map(obj => `
-        <div class="object-item ${state.objects[obj.id].enabled ? 'enabled' : 'disabled'}" 
-             data-object="${obj.id}">
-          <div class="object-header">
-            <div class="object-checkbox ${state.objects[obj.id].enabled ? 'checked' : ''}" 
-                 data-object-toggle="${obj.id}"
-                 role="checkbox"
-                 tabindex="0"
-                 aria-checked="${state.objects[obj.id].enabled}"
-                 aria-label="${obj.name}: ${obj.description}"></div>
-            <span class="object-icon">${obj.icon}</span>
-            <span class="object-name">${obj.name}</span>
-          </div>
-          <div class="object-controls">
-            <div class="object-position" data-object-position="${obj.id}" role="group" aria-label="Pozycja: ${obj.name}">
-              <button class="btn-position ${state.objects[obj.id].position === 'left' ? 'selected' : ''}" 
-                      data-pos="left" aria-label="Lewa strona">◀</button>
-              <button class="btn-position ${state.objects[obj.id].position === 'center' ? 'selected' : ''}" 
-                      data-pos="center" aria-label="Środek">●</button>
-              <button class="btn-position ${state.objects[obj.id].position === 'right' ? 'selected' : ''}" 
-                      data-pos="right" aria-label="Prawa strona">▶</button>
+      container.innerHTML = CONFIG.objects.map(obj => {
+        const objState = state.architect.objects[obj.id];
+        const volume = Math.round(objState.volume * 100);
+        
+        return `
+          <div class="object-item ${objState.enabled ? 'enabled' : 'disabled'}" 
+               data-object="${obj.id}">
+            <div class="object-header">
+              <div class="object-checkbox ${objState.enabled ? 'checked' : ''}" 
+                   data-object-toggle="${obj.id}"
+                   role="checkbox"
+                   tabindex="0"
+                   aria-checked="${objState.enabled}"
+                   aria-label="${obj.name}: ${obj.description}"></div>
+              <span class="object-icon">${obj.icon}</span>
+              <span class="object-name">${obj.name}</span>
             </div>
-            <input type="range" class="object-volume" min="0" max="100" value="50" 
-                   data-object-volume="${obj.id}"
-                   aria-label="Głośność: ${obj.name}">
+            <div class="object-controls">
+              <div class="object-position" data-object-position="${obj.id}" role="group" aria-label="Pozycja: ${obj.name}">
+                <button class="btn-position ${objState.position === 'left' ? 'selected' : ''}" 
+                        data-pos="left" aria-label="Lewa strona">◀</button>
+                <button class="btn-position ${objState.position === 'center' ? 'selected' : ''}" 
+                        data-pos="center" aria-label="Środek">●</button>
+                <button class="btn-position ${objState.position === 'right' ? 'selected' : ''}" 
+                        data-pos="right" aria-label="Prawa strona">▶</button>
+              </div>
+              <div class="range-wrapper object-volume">
+                <div class="range-fill object-range-fill-${obj.id}"></div>
+                <input type="range" min="0" max="100" value="${volume}" 
+                       data-object-volume="${obj.id}"
+                       aria-label="Głośność: ${obj.name}">
+              </div>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
       
-      // Checkbox handlers - click and keyboard
       container.querySelectorAll('.object-checkbox').forEach(checkbox => {
         const handleToggle = () => {
           const objectId = checkbox.dataset.objectToggle;
-          const newState = !state.objects[objectId].enabled;
+          const newState = !state.architect.objects[objectId].enabled;
           toggleObject(objectId, newState);
         };
         
@@ -1750,7 +2159,6 @@
         });
       });
       
-      // Position handlers
       container.querySelectorAll('.object-position').forEach(posContainer => {
         posContainer.querySelectorAll('.btn-position').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -1758,19 +2166,22 @@
             const position = btn.dataset.pos;
             updateObjectPosition(objectId, position);
             
-            // Update UI
             posContainer.querySelectorAll('.btn-position').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
           });
         });
       });
       
-      // Volume handlers
-      container.querySelectorAll('.object-volume').forEach(input => {
+      container.querySelectorAll('[data-object-volume]').forEach(input => {
+        const objectId = input.dataset.objectVolume;
+        const fillEl = container.querySelector(`.object-range-fill-${objectId}`);
+        
+        updateRangeFill(input, fillEl);
+        
         input.addEventListener('input', (e) => {
-          const objectId = e.target.dataset.objectVolume;
           const volume = e.target.value / 100;
           updateObjectVolume(objectId, volume);
+          updateRangeFill(input, fillEl);
         });
       });
     }
@@ -1779,7 +2190,7 @@
       const item = document.querySelector(`.object-item[data-object="${objectId}"]`);
       if (!item) return;
       
-      const objState = state.objects[objectId];
+      const objState = state.architect.objects[objectId];
       item.classList.toggle('enabled', objState.enabled);
       item.classList.toggle('disabled', !objState.enabled);
       
@@ -1797,42 +2208,51 @@
         await initAudioContext();
         document.getElementById('audioPrompt').classList.add('hidden');
         
-        // Load first session
         const firstSession = CONFIG.sessions[0];
-        document.getElementById('voiceTitle').textContent = firstSession.name;
-        await loadVoiceSession(firstSession.id);
+        document.getElementById('meditationTitle').textContent = firstSession.name;
+        await loadMeditationSession(firstSession.id);
       });
       
       // Play/Pause
       document.getElementById('btnPlay').addEventListener('click', () => {
-        if (state.voice.isPlaying) {
-          pauseVoice();
+        if (state.meditation.isPlaying) {
+          pauseMeditation();
         } else {
-          playVoice();
+          playMeditation();
         }
       });
       
       // Stop
-      document.getElementById('btnStop').addEventListener('click', stopVoice);
+      document.getElementById('btnStop').addEventListener('click', stopMeditation);
       
       // Master volume
-      document.getElementById('masterVolume').addEventListener('input', (e) => {
+      const masterVolume = document.getElementById('masterVolume');
+      const masterVolumeFill = document.getElementById('masterVolumeFill');
+      updateRangeFill(masterVolume, masterVolumeFill);
+      
+      masterVolume.addEventListener('input', (e) => {
         state.masterVolume = e.target.value / 100;
+        updateRangeFill(masterVolume, masterVolumeFill);
         if (state.masterGain) {
           state.masterGain.gain.setTargetAtTime(state.masterVolume, state.audioContext.currentTime, 0.1);
         }
       });
       
       // Voice volume
-      document.getElementById('voiceVolume').addEventListener('input', (e) => {
-        state.voice.volume = e.target.value / 100;
+      const voiceVolume = document.getElementById('voiceVolume');
+      const voiceVolumeFill = document.getElementById('voiceVolumeFill');
+      updateRangeFill(voiceVolume, voiceVolumeFill);
+      
+      voiceVolume.addEventListener('input', (e) => {
+        state.meditation.volume = e.target.value / 100;
         document.getElementById('voiceVolumeValue').textContent = `${e.target.value}%`;
-        if (state.voice.gainNode) {
-          state.voice.gainNode.gain.setTargetAtTime(state.voice.volume, state.audioContext.currentTime, 0.1);
+        updateRangeFill(voiceVolume, voiceVolumeFill);
+        if (state.meditation.gainNode) {
+          state.meditation.gainNode.gain.setTargetAtTime(state.meditation.volume, state.audioContext.currentTime, 0.1);
         }
       });
       
-      // HRTF toggle - click and keyboard
+      // HRTF toggle
       const hrtfToggle = document.getElementById('hrtfToggle');
       
       hrtfToggle.addEventListener('click', () => {
@@ -1853,7 +2273,7 @@
       document.getElementById('voicePosition').querySelectorAll('.btn-position').forEach(btn => {
         btn.addEventListener('click', () => {
           const position = btn.dataset.pos;
-          updateVoicePosition(position);
+          updateMeditationPosition(position);
           
           document.getElementById('voicePosition').querySelectorAll('.btn-position')
             .forEach(b => b.classList.remove('selected'));
@@ -1861,25 +2281,81 @@
         });
       });
       
+      // Sync toggle
+      const syncToggle = document.getElementById('syncToggle');
+      
+      syncToggle.addEventListener('click', () => {
+        const enabled = !syncToggle.classList.contains('active');
+        syncToggle.classList.toggle('active', enabled);
+        syncToggle.setAttribute('aria-checked', enabled);
+        state.meditation.syncWithSpace = enabled;
+        
+        if (enabled) {
+          showStatus('Przestrzeń zakończy się z końcem medytacji');
+        } else {
+          showStatus('Przestrzeń działa niezależnie');
+        }
+      });
+      
+      syncToggle.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          syncToggle.click();
+        }
+      });
+      
       // Progress bar seek
       document.getElementById('progressBar').addEventListener('click', (e) => {
-        if (!state.voice.buffer) return;
+        if (!state.meditation.buffer) return;
         
         const rect = e.currentTarget.getBoundingClientRect();
         const progress = (e.clientX - rect.left) / rect.width;
-        const seekTime = progress * state.voice.duration;
+        const seekTime = progress * state.meditation.duration;
         
-        const wasPlaying = state.voice.isPlaying;
-        stopVoice();
-        state.voice.pauseTime = seekTime;
-        state.voice.isPaused = true;
+        const wasPlaying = state.meditation.isPlaying;
+        stopMeditation();
+        state.meditation.pauseTime = seekTime;
+        state.meditation.isPaused = true;
         
         updateProgressBar(progress);
         document.getElementById('currentTime').textContent = formatTime(seekTime);
         
         if (wasPlaying) {
-          playVoice();
+          playMeditation();
         }
+      });
+      
+      // Architect panel expand/collapse
+      document.getElementById('architectHeader').addEventListener('click', () => {
+        const panel = document.getElementById('architectPanel');
+        state.architect.isExpanded = !state.architect.isExpanded;
+        panel.classList.toggle('expanded', state.architect.isExpanded);
+      });
+      
+      // Timer presets
+      document.querySelectorAll('.btn-timer-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const minutes = parseInt(btn.dataset.minutes);
+          
+          document.querySelectorAll('.btn-timer-preset').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          state.architect.timer.selectedPreset = minutes;
+        });
+      });
+      
+      // Timer start
+      document.getElementById('btnTimerStart').addEventListener('click', () => {
+        if (state.architect.timer.selectedPreset) {
+          startTimer(state.architect.timer.selectedPreset);
+        } else {
+          showStatus('Wybierz najpierw czas');
+        }
+      });
+      
+      // Timer stop
+      document.getElementById('btnTimerStop').addEventListener('click', () => {
+        stopTimer();
       });
     }
 
@@ -1887,9 +2363,9 @@
     // INITIALIZATION
     // ========================================
     function init() {
-      // Inicjalizuj volumes per scena przed renderem
       CONFIG.scenes.forEach(scene => {
-        state.scene.volumes[scene.id] = 0.5;
+        state.architect.scene.volumes[scene.id] = 0.5;
+        state.architect.scene.expanded[scene.id] = false;
       });
       
       renderSessionCards();
@@ -1897,11 +2373,10 @@
       renderObjectsList();
       setupEventHandlers();
       
-      console.log('🎧 Przestrzeń Relaksu — zainicjalizowana');
-      console.log('📁 Ścieżki audio: assets/audio/{voice,scenes,objects}/*.mp3');
+      console.log('🎧 Przestrzeń relaksu — zainicjalizowana');
+      console.log('📁 Ścieżki audio: assets/audio/{voice,scenes,objects,timer}/*.mp3');
     }
 
-    // Start when DOM ready
     document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
