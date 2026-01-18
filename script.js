@@ -143,7 +143,20 @@ const CONFIG = {
   // Ustawienia audio
   fadeInTime: 0.15,
   fadeOutTime: 0.8,
-  positionSmoothingTime: 0.05  // Czas wygładzania pozycji (eliminuje trzaski)
+  positionSmoothingTime: 0.05,  // Czas wygładzania pozycji (eliminuje trzaski)
+  
+  // === USTAWIENIA DŹWIĘKU 3D (OBIEKTY) ===
+  // Model 'inverse': gain = refDistance / (refDistance + rolloffFactor * (distance - refDistance))
+  audio3d: {
+    refDistance: 2,        // Odległość referencyjna (100% głośności) w metrach
+    rolloffFactor: 0.01,   // Współczynnik tłumienia (im mniejszy, tym wolniejsze tłumienie)
+    maxDistance: 10000,    // Maksymalna odległość
+    // Przykłady dla rolloffFactor:
+    // 0.01 → przy 100m: 67% głośności (BARDZO wolne)
+    // 0.02 → przy 100m: 50% głośności (wolne)
+    // 0.05 → przy 100m: 29% głośności (umiarkowane)
+    // 0.1  → przy 100m: 17% głośności (szybkie)
+  }
 };
 
 
@@ -217,17 +230,17 @@ CONFIG.objects.forEach(obj => {
     source: null,
     gainNode: null,
     pannerNode: null,
-    volume: 0.5,
-    baseVolume: 1.0,    // [NOWE] Głośność bazowa (0-2) do normalizacji plików
+    volume: 0.7,        // Domyślna głośność 70%
+    baseVolume: 1.0,    // Głośność bazowa (0.0-2.0) do normalizacji plików
     position: 'center',  // Legacy
-    // [NOWE] Pozycjonowanie 3D
+    // Pozycjonowanie 3D
     position3d: {
       azimuth: 0,      // 0-360° (0° = przód/północ)
       elevation: 0,    // -90° do +90° (0° = poziom)
-      distance: 20     // 1-100m (domyślnie 20m = dobrze słyszalne)
+      distance: 10     // 1-100m (domyślnie 10m = blisko, dobrze słyszalne)
     },
-    instanceId: null,  // Unikalny ID instancji
-    isLoading: false   // Flaga ładowania
+    instanceId: null,
+    isLoading: false
   };
 });
 
@@ -342,23 +355,23 @@ async function initAudioContext() {
   });
   
   // === Węzły dla obiektów ===
-  // Model odległości: używamy 'inverse' z dostosowanymi parametrami
+  // Model odległości: 'inverse' z konfigurowalnymi parametrami
   // Wzór: gain = refDistance / (refDistance + rolloffFactor * (distance - refDistance))
-  // 
-  // NAUKOWE PODSTAWY:
-  // - Prawo odwrotnych kwadratów (1/r²) opisuje idealne tłumienie w wolnej przestrzeni
-  // - W rzeczywistości tłumienie jest wolniejsze z powodu odbić i absorpcji
-  // - refDistance = 2m oznacza "pełną głośność" w odległości 2 metrów
-  // - rolloffFactor = 0.3 daje realistyczne, łagodne tłumienie
-  // - Przy 100m głośność = 2/(2+0.3*98) = 2/31.4 = 6.4% (zamiast 2.5% przy domyślnych)
   CONFIG.objects.forEach(obj => {
     const gain = state.audioContext.createGain();
+    gain.gain.value = 1.0; // Pełna głośność początkowa
+    
     const panner = state.audioContext.createPanner();
     panner.panningModel = 'HRTF';
     panner.distanceModel = 'inverse';
-    panner.refDistance = 2;        // Dźwięk referencyjny = 2m (bliski)
-    panner.maxDistance = 10000;
-    panner.rolloffFactor = 0.3;    // Wolniejsze tłumienie (domyślnie 1.0)
+    panner.refDistance = CONFIG.audio3d.refDistance;
+    panner.maxDistance = CONFIG.audio3d.maxDistance;
+    panner.rolloffFactor = CONFIG.audio3d.rolloffFactor;
+    panner.coneInnerAngle = 360;
+    panner.coneOuterAngle = 360;
+    panner.coneOuterGain = 1;
+    
+    console.log(`🎧 PannerNode ${obj.id}: refDist=${panner.refDistance}, rolloff=${panner.rolloffFactor}, model=${panner.distanceModel}`);
     
     gain.connect(panner);
     panner.connect(state.masterGain);
@@ -366,7 +379,8 @@ async function initAudioContext() {
     state.architect.objects[obj.id].gainNode = gain;
     state.architect.objects[obj.id].pannerNode = panner;
     
-    updateObjectPosition(obj.id, 'center');
+    // Ustaw początkową pozycję 3D (zamiast legacy center)
+    updateObject3DPosition(obj.id);
   });
   
   loadTimerSounds();
@@ -885,7 +899,6 @@ function updateObjectVolume(objectId, volume) {
   if (objState) {
     objState.volume = volume;
     if (objState.gainNode && objState.enabled) {
-      // Głośność końcowa = volume × baseVolume
       const finalVolume = volume * objState.baseVolume;
       objState.gainNode.gain.setTargetAtTime(finalVolume, state.audioContext.currentTime, 0.1);
     }
@@ -894,16 +907,15 @@ function updateObjectVolume(objectId, volume) {
 }
 
 /**
- * Aktualizuje głośność bazową obiektu (do normalizacji plików)
+ * Aktualizuje głośność bazową obiektu (do normalizacji plików audio)
  * @param {string} objectId - ID obiektu
- * @param {number} baseVolume - Głośność bazowa 0-2 (1.0 = neutralna)
+ * @param {number} baseVolume - Głośność bazowa 0-2 (1.0 = bez zmiany)
  */
 function updateObjectBaseVolume(objectId, baseVolume) {
   const objState = state.architect.objects[objectId];
   if (objState) {
     objState.baseVolume = baseVolume;
     if (objState.gainNode && objState.enabled) {
-      // Głośność końcowa = volume × baseVolume
       const finalVolume = objState.volume * baseVolume;
       objState.gainNode.gain.setTargetAtTime(finalVolume, state.audioContext.currentTime, 0.1);
     }
@@ -1151,6 +1163,13 @@ function updateObject3DPosition(objectId) {
   objState.pannerNode.positionX.setTargetAtTime(coords.x, currentTime, smoothingTime);
   objState.pannerNode.positionY.setTargetAtTime(coords.y, currentTime, smoothingTime);
   objState.pannerNode.positionZ.setTargetAtTime(coords.z, currentTime, smoothingTime);
+  
+  // Debug: oblicz teoretyczną głośność
+  const refDist = CONFIG.audio3d.refDistance;
+  const rolloff = CONFIG.audio3d.rolloffFactor;
+  const dist = pos3d.distance;
+  const theoreticalGain = refDist / (refDist + rolloff * Math.max(0, dist - refDist));
+  console.log(`🔊 ${objectId}: dist=${dist}m, xyz=(${coords.x.toFixed(1)}, ${coords.y.toFixed(1)}, ${coords.z.toFixed(1)}), gain≈${(theoreticalGain*100).toFixed(0)}%`);
 }
 
 /**
@@ -1164,16 +1183,30 @@ function selectObjectFor3DControl(objectId) {
   
   if (objectId) {
     const objState = state.architect.objects[objectId];
+    const obj = CONFIG.objects.find(o => o.id === objectId);
     const pos3d = objState.position3d;
     
     // Pokaż kontrolki
     controlsPanel.style.display = 'block';
     
+    // Dynamicznie dodaj suwak głośności jeśli nie istnieje
+    ensureVolumeSliderExists(controlsPanel);
+    
     // Ustaw wartości sliderów
-    document.getElementById('baseVolume3d').value = Math.round(objState.baseVolume * 100);
+    const baseVolumeSlider = document.getElementById('baseVolume3d');
+    if (baseVolumeSlider) {
+      baseVolumeSlider.value = Math.round(objState.baseVolume * 100);
+    }
+    
     document.getElementById('distance3d').value = pos3d.distance;
     document.getElementById('azimuth3d').value = pos3d.azimuth;
     document.getElementById('elevation3d').value = pos3d.elevation;
+    
+    // Aktualizuj tytuł panelu z nazwą obiektu
+    const titleEl = controlsPanel.querySelector('.panel-title');
+    if (titleEl && obj) {
+      titleEl.innerHTML = `${obj.icon} ${obj.name} — pozycja 3D`;
+    }
     
     update3DSliderLabels();
   } else {
@@ -1186,15 +1219,52 @@ function selectObjectFor3DControl(objectId) {
 }
 
 /**
+ * Upewnia się że suwak głośności istnieje w panelu kontroli 3D
+ * (dodaje dynamicznie jeśli brakuje w HTML)
+ */
+function ensureVolumeSliderExists(controlsPanel) {
+  if (document.getElementById('baseVolume3d')) return; // Już istnieje
+  
+  // Znajdź pierwszy slider-3d-group (odległość)
+  const firstGroup = controlsPanel.querySelector('.slider-3d-group');
+  if (!firstGroup) return;
+  
+  // Stwórz nowy slider dla głośności
+  const volumeGroup = document.createElement('div');
+  volumeGroup.className = 'slider-3d-group';
+  volumeGroup.innerHTML = `
+    <label>
+      <span>🔊 Głośność bazowa</span>
+      <span class="slider-3d-value" id="baseVolumeValue">100%</span>
+    </label>
+    <input type="range" id="baseVolume3d" min="0" max="200" value="100" 
+           aria-label="Głośność bazowa obiektu">
+  `;
+  
+  // Wstaw przed pierwszym sliderem
+  firstGroup.parentNode.insertBefore(volumeGroup, firstGroup);
+  
+  // Podepnij event listener
+  const slider = volumeGroup.querySelector('input');
+  slider.addEventListener('input', on3DSliderChange);
+}
+
+/**
  * Aktualizuj labels sliderów 3D
  */
 function update3DSliderLabels() {
-  const baseVolume = parseFloat(document.getElementById('baseVolume3d').value);
+  const baseVolumeEl = document.getElementById('baseVolume3d');
+  const baseVolumeValueEl = document.getElementById('baseVolumeValue');
+  
+  if (baseVolumeEl && baseVolumeValueEl) {
+    const baseVolume = parseFloat(baseVolumeEl.value);
+    baseVolumeValueEl.textContent = baseVolume.toFixed(0) + '%';
+  }
+  
   const distance = parseFloat(document.getElementById('distance3d').value);
   const azimuth = parseFloat(document.getElementById('azimuth3d').value);
   const elevation = parseFloat(document.getElementById('elevation3d').value);
   
-  document.getElementById('baseVolumeValue').textContent = baseVolume.toFixed(0) + '%';
   document.getElementById('distanceValue').textContent = distance.toFixed(0) + 'm';
   document.getElementById('azimuthValue').textContent = azimuth.toFixed(0) + '°';
   document.getElementById('elevationValue').textContent = elevation > 0 ? '+' + elevation.toFixed(0) + '°' : elevation.toFixed(0) + '°';
@@ -1209,9 +1279,12 @@ function on3DSliderChange() {
   
   const objState = state.architect.objects[objectId];
   
-  // Aktualizuj baseVolume
-  const newBaseVolume = parseFloat(document.getElementById('baseVolume3d').value) / 100;
-  updateObjectBaseVolume(objectId, newBaseVolume);
+  // Aktualizuj baseVolume jeśli slider istnieje
+  const baseVolumeEl = document.getElementById('baseVolume3d');
+  if (baseVolumeEl) {
+    const newBaseVolume = parseFloat(baseVolumeEl.value) / 100;
+    updateObjectBaseVolume(objectId, newBaseVolume);
+  }
   
   // Aktualizuj pozycję 3D
   objState.position3d.distance = parseFloat(document.getElementById('distance3d').value);
@@ -2025,14 +2098,9 @@ function setupEventHandlers() {
   });
   
   // === [NOWE] 3D Position Sliders ===
-  const baseVolume3d = document.getElementById('baseVolume3d');
   const distance3d = document.getElementById('distance3d');
   const azimuth3d = document.getElementById('azimuth3d');
   const elevation3d = document.getElementById('elevation3d');
-  
-  if (baseVolume3d) {
-    baseVolume3d.addEventListener('input', on3DSliderChange);
-  }
   
   if (distance3d) {
     distance3d.addEventListener('input', on3DSliderChange);
