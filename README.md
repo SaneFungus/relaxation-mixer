@@ -1,243 +1,221 @@
-# 🎧 Przestrzeń Relaksu
+# 🎧 Przestrzeń Relaksu — Binaural Mixer
 
-**Binauralny mikser relaksacyjny z przestrzennym audio 3D**
+**Aplikacja do medytacji z dźwiękiem przestrzennym 3D (HRTF)**
 
-Immersyjna aplikacja webowa łącząca prowadzone medytacje z binauralnymi krajobrazami dźwiękowymi i przestrzennie pozycjonowanymi obiektami audio. Zaprojektowana w estetyce *Ambient Morphism* — płynnych gradientów, glassmorphizmu i organicznych animacji.
-
-![Przestrzeń Relaksu Preview](preview.png)
+Statyczna strona HTML/CSS/JS zaprojektowana do hostingu na GitHub Pages.
 
 ---
 
-## ✨ Funkcjonalności
+## 🌟 Funkcje
 
-### 🧘 Sesje Głosowe
-- 5 prowadzonych medytacji z pozycjonowaniem HRTF
-- Kontrola Play/Pause/Stop z pamięcią pozycji
-- Przestrzenne rozmieszczenie głosu (Lewa/Środek/Prawa)
-- Możliwość wyłączenia efektu 3D
-
-### 🌍 Sceny Binauralne
-- 4 gotowe krajobrazy dźwiękowe (stereo binaural)
-- Płynne crossfade między scenami
-- Indywidualna kontrola głośności per scena
-- Pętlone odtwarzanie w tle
-
-### 🔮 Obiekty Dźwiękowe 3D
-- 4 punktowe źródła z pełnym HRTF
-- Możliwość włączenia wielu obiektów jednocześnie
-- Przestrzenne pozycjonowanie każdego obiektu (L/C/R)
-- Indywidualna kontrola głośności
-
-### 🎨 Interfejs Ambient Morphism
-- Animowane tło Aurora z pływającymi orbami
-- Panele glassmorphism z rozmyciem tła
-- Efekt "oddychania" podczas odtwarzania
-- Pełna responsywność (mobile-first)
-- Wsparcie dla `prefers-reduced-motion`
-
-### ♿ Dostępność (WCAG 2.1 AA)
-- Pełna nawigacja klawiaturą
-- Atrybuty ARIA dla czytników ekranu
-- Widoczne wskaźniki focusu
-- Komunikaty aria-live
+- **5 sesji medytacji prowadzonej** - skanowanie ciała, oddech, obserwacja myśli, rozluźnienie, wizualizacja
+- **Canvas 3D Visualization** - wizualizacja przestrzeni z perspektywy top-down
+- **Full 3D Positioning** - azymut (0-360°), elevacja (-90° do +90°), odległość (1-100m)
+- **Drag & Drop** - przeciąganie obiektów na canvas (touch + mouse)
+- **4 sceny tła** - plaża, górska polana, letni las, nocne cykady
+- **4 dodatkowe obiekty dźwiękowe** - tybetańska misa, zegar, śpiew kosa, strumień
+- **Dźwięk przestrzenny 3D (HRTF)** - pełna kontrola pozycjonowania w przestrzeni
+- **Timer przestrzeni** - automatyczne wyłączenie po zadanym czasie
+- **Synchronizacja** - możliwość zsynchronizowania końca przestrzeni z końcem medytacji
+- **Responsywny design** - mobile-first, touch-friendly UI
+- **Accessibility** - pełna obsługa klawiatury, ARIA labels
 
 ---
 
-## 🛠️ Technologie
+## 🚀 Demo
 
-- **HTML5** — Semantyczna struktura
-- **CSS3** — Animacje, glassmorphism, CSS variables
-- **JavaScript** — Vanilla JS, bez frameworków
-- **Web Audio API** — AudioContext, HRTF PannerNode
-- **Google Fonts** — Outfit, DM Sans, JetBrains Mono
+**Strona dostępna pod:**  
+👉 **[https://[twoja-nazwa].github.io/przestrzen-relaksu/]()**
+
+*(Zastąp swoją nazwą użytkownika GitHub)*
 
 ---
 
-## 🚀 Instalacja
+## 📦 Technologie
+
+- **HTML5** - semantyczna struktura
+- **CSS3** - CSS Variables, Flexbox, Grid, animacje
+- **Vanilla JavaScript (ES6+)** - bez frameworków
+- **Web Audio API** - zaawansowane przetwarzanie audio
+- **HRTF Panning** - przestrzenny dźwięk 3D
+- **Canvas 2D API** - wizualizacja przestrzeni dźwiękowej
+- **Touch Events** - drag & drop na mobile
+
+---
+
+## 🛠️ Instalacja lokalna
 
 ### 1. Sklonuj repozytorium
-
 ```bash
-git clone https://github.com/YOUR_USERNAME/przestrzen-relaksu.git
+git clone https://github.com/[twoja-nazwa]/przestrzen-relaksu.git
 cd przestrzen-relaksu
 ```
 
-### 2. Dodaj pliki audio
-
-Umieść pliki MP3 w odpowiedniej strukturze katalogów:
-
-```
-assets/audio/
-├── voice/
-│   ├── body-scan.mp3          # Podróż przez Ciało
-│   ├── breath-sitting.mp3     # Spokojny Oddech
-│   ├── sounds-thoughts.mp3    # Przestrzeń Myśli
-│   ├── relaxation.mp3         # Głębokie Rozluźnienie
-│   └── visualization.mp3      # Wewnętrzna Podróż
-├── scenes/
-│   ├── beach.mp3              # Plaża o Zmierzchu (stereo binaural)
-│   ├── mountain-meadow.mp3    # Górska Polana (stereo binaural)
-│   ├── summer-forest.mp3      # Letni Las (stereo binaural)
-│   └── night-cicadas.mp3      # Nocne Cykady (stereo binaural)
-└── objects/
-    ├── bell.mp3               # Tybetańska Misa (mono)
-    ├── clock.mp3              # Stary Zegar (mono)
-    ├── blackbird.mp3          # Śpiew Kosa (mono)
-    └── stream.mp3             # Leśny Strumień (mono)
-```
-
-> **Uwaga:** Sceny powinny być stereo (już binauralne), obiekty mono (HRTF nakładany przez aplikację).
-
-### 3. Uruchom lokalnie
-
+### 2. Uruchom lokalny serwer
+**Opcja A - Python 3:**
 ```bash
-# Python 3
 python -m http.server 8000
-
-# Node.js
-npx serve .
-
-# PHP
-php -S localhost:8000
 ```
 
-Otwórz `http://localhost:8000` w przeglądarce.
-
-### 4. Wdróż na GitHub Pages
-
+**Opcja B - Node.js (http-server):**
 ```bash
-git add .
-git commit -m "Initial commit: Przestrzeń Relaksu"
-git push origin main
+npx http-server -p 8000
 ```
 
-W ustawieniach repozytorium: **Settings → Pages → Source: main branch**
+**Opcja C - VS Code Live Server:**
+- Zainstaluj rozszerzenie "Live Server"
+- Kliknij prawym na `index.html` → "Open with Live Server"
 
-Aplikacja będzie dostępna pod: `https://YOUR_USERNAME.github.io/przestrzen-relaksu/`
+### 3. Otwórz przeglądarkę
+```
+http://localhost:8000
+```
 
 ---
 
-## 🎧 Wymagania Audio
+## 📁 Struktura projektu
 
-### Sesje głosowe (voice/)
-- Format: MP3 (zalecane 128-192 kbps)
-- Kanały: Mono lub Stereo
-- Długość: 10-40 minut
+```
+przestrzen-relaksu/
+├── index.html           # Główny plik HTML
+├── css/
+│   └── styles.css       # Wszystkie style (CSS Variables, animacje)
+├── js/
+│   └── script.js        # Logika aplikacji (Web Audio API)
+├── assets/
+│   └── audio/
+│       ├── voice/       # Sesje medytacji (.webm + .mp3 fallback)
+│       ├── scenes/      # Sceny tła (.webm + .mp3)
+│       ├── objects/     # Obiekty dźwiękowe (.webm + .mp3)
+│       └── timer/       # Dźwięki timera (.webm + .mp3)
+├── DEPLOYMENT.md        # Szczegółowa instrukcja deployment
+└── README.md            # Ten plik
+```
 
-### Sceny (scenes/)
-- Format: MP3 (zalecane 192-256 kbps)
-- Kanały: **Stereo binaural** (nagrane z dummy head lub przetworzone)
-- Typ: Loopowalne (płynne przejście końca w początek)
+---
 
-### Obiekty 3D (objects/)
-- Format: MP3 (zalecane 128 kbps)
-- Kanały: **Mono** (HRTF nakładany przez Web Audio API)
-- Typ: Loopowalne
+## 🎨 Customizacja
+
+### Zmiana kolorów
+Edytuj CSS Variables w `css/styles.css`:
+```css
+:root {
+  --cyan-glow: #32b8c6;      /* Główny akcent */
+  --magenta-pulse: #c850a0;  /* Drugi akcent */
+  --violet-mist: #6366f1;    /* Akcent timera */
+}
+```
+
+### Dodanie nowej sesji medytacji
+Edytuj `js/script.js` → `CONFIG.sessions`:
+```javascript
+{
+  id: 'moja-sesja',
+  name: 'Moja sesja',
+  icon: '🌟',
+  file: 'assets/audio/voice/moja-sesja.webm',
+  fallback: 'assets/audio/voice/moja-sesja.mp3',
+  description: 'Krótki opis sesji'
+}
+```
+
+---
+
+## 🔊 Formaty audio
+
+Aplikacja obsługuje **progresywne wzbogacanie**:
+
+1. **Preferowany:** `.webm` (kodek Opus)
+   - Bezszwowe zapętlanie (brak padding)
+   - Lepsza kompresja
+   - Natywna obsługa Web Audio API
+
+2. **Fallback:** `.mp3`
+   - Dla starszych przeglądarek
+   - Automatyczne przełączenie jeśli WebM niedostępny
+
+### Konwersja MP3 → WebM (ffmpeg)
+```bash
+ffmpeg -i input.mp3 -c:a libopus -b:a 128k -vn output.webm
+```
+
+---
+
+## 🐛 Naprawione problemy
+
+### ✅ Race Conditions
+- Każda instancja audio ma unikalny ID
+- Weryfikacja przed cleanup przy async operacjach
+- Uniemożliwia zatrzymanie nowo uruchomionego źródła
+
+### ✅ Async Validation
+- State guard przy szybkim włączaniu/wyłączaniu
+- Loading flag blokuje wielokrotne kliknięcia
+- Walidacja stanu po zakończeniu ładowania
+
+### ✅ Audio Pops (trzaski)
+- Używamy `setTargetAtTime()` zamiast `setValueAtTime()`
+- Płynne przejścia logarytmiczne dla pozycji przestrzennej
+- Eliminuje nagłe skoki wartości
+
+### ✅ UI Sync
+- Reaktywny system synchronizacji stanu
+- `markStateChanged()` inkrementuje wersję stanu
+- Automatyczne odświeżenie UI po każdej zmianie
 
 ---
 
 ## 📱 Kompatybilność
 
-| Przeglądarka | Wsparcie |
-|--------------|----------|
-| Chrome 66+ | ✅ Pełne |
-| Firefox 61+ | ✅ Pełne |
-| Safari 14.1+ | ✅ Pełne |
-| Edge 79+ | ✅ Pełne |
-| Mobile Chrome | ✅ Pełne |
-| Mobile Safari | ✅ Pełne |
+### Przeglądarki desktop
+- ✅ Chrome/Edge 90+
+- ✅ Firefox 88+
+- ✅ Safari 14.1+
 
-> **Ważne:** Dla najlepszego efektu przestrzennego używaj słuchawek.
+### Przeglądarki mobile
+- ✅ Chrome Android
+- ✅ Safari iOS 14.5+
+- ⚠️ Samsung Internet (może wymagać fallbacku MP3)
 
----
-
-## 🎨 Personalizacja
-
-### Zmiana kolorów
-
-Edytuj zmienne CSS w sekcji `:root`:
-
-```css
-:root {
-  --deep-void: #0a0e14;      /* Tło główne */
-  --surface: #121820;         /* Karty, panele */
-  --cyan-glow: #32b8c6;       /* Akcent główny */
-  --magenta-pulse: #c850a0;   /* Akcent sekundarny */
-}
-```
-
-### Dodawanie nowych sesji/scen/obiektów
-
-Rozszerz obiekt `CONFIG` w sekcji JavaScript:
-
-```javascript
-const CONFIG = {
-  sessions: [
-    // Dodaj nową sesję:
-    { 
-      id: 'new-session', 
-      name: 'Nowa Sesja', 
-      icon: '🌸', 
-      file: 'assets/audio/voice/new-session.mp3',
-      description: 'Opis nowej sesji'
-    },
-    // ...
-  ],
-  // Analogicznie dla scenes i objects
-};
-```
+### Wymagania
+- JavaScript włączony
+- Web Audio API support
+- HTTPS (lub localhost) - wymagane dla audio context
 
 ---
 
-## 📄 Struktura Projektu
+## 🤝 Contributing
 
-```
-przestrzen-relaksu/
-├── index.html          # Kompletna aplikacja (single file)
-├── README.md           # Dokumentacja
-├── LICENSE             # Licencja MIT
-├── preview.png         # Screenshot do README
-└── assets/
-    └── audio/
-        ├── voice/      # Sesje medytacji
-        ├── scenes/     # Krajobrazy binauralne
-        └── objects/    # Obiekty 3D
-```
+Pull requesty mile widziane! Dla większych zmian:
+1. Fork repo
+2. Utwórz feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit zmian (`git commit -m 'Add some AmazingFeature'`)
+4. Push do brancha (`git push origin feature/AmazingFeature`)
+5. Otwórz Pull Request
+
+---
+
+## 📄 Licencja
+
+MIT License - możesz swobodnie używać, modyfikować i dystrybuować.
+
+Zobacz [LICENSE](LICENSE) dla szczegółów.
 
 ---
 
 ## 🙏 Podziękowania
 
-Projekt stworzony z wykorzystaniem metodologii **Digital Art Project** — procesu łączącego wiedzę z historii sztuki cyfrowej z nowoczesnymi technikami webowymi.
-
-### Zespół Wirtualnych Specjalistów
-- **Olaf Dietrich Webart** — Koncepcja artystyczna
-- **Maya Interaction** — Architektura UX
-- **Viktor Visuelle** — System wizualny UI
-- **Coda Craft** — Implementacja front-end
-- **Lydia Content** — Strategia treści
-- **Techne Director** — Finalizacja techniczna
+- **Web Audio API** - za potężne możliwości audio w przeglądarce
+- **HRTF** - za prawdziwy dźwięk przestrzenny 3D
+- **GitHub Pages** - za darmowy hosting statyczny
 
 ---
 
-## 📜 Licencja
+## 📧 Kontakt
 
-MIT License — szczegóły w pliku [LICENSE](LICENSE)
-
----
-
-## 🔮 Roadmapa
-
-- [ ] Reactive visuals (wizualizacja reagująca na dźwięk)
-- [ ] Generative soundscapes (proceduralne dźwięki natury)
-- [ ] Biofeedback integration (połączenie z pulsometrem)
-- [ ] Full 360° ambisonics
-- [ ] PWA z obsługą offline
-- [ ] Eksport własnych mixów
+Pytania? Issues? Pull requesty?  
+👉 [Issues](https://github.com/[twoja-nazwa]/przestrzen-relaksu/issues)
 
 ---
 
-<p align="center">
-  <strong>🎧 Wejdź w ciszę</strong><br>
-  <em>Przestrzeń Relaksu — gdzie dźwięki tworzą ciszę</em>
-</p>
+**Zbudowane z ❤️ dla spokoju i relaksu**
