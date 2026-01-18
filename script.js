@@ -218,12 +218,13 @@ CONFIG.objects.forEach(obj => {
     gainNode: null,
     pannerNode: null,
     volume: 0.5,
+    baseVolume: 1.0,    // [NOWE] Głośność bazowa (0-2) do normalizacji plików
     position: 'center',  // Legacy
     // [NOWE] Pozycjonowanie 3D
     position3d: {
       azimuth: 0,      // 0-360° (0° = przód/północ)
       elevation: 0,    // -90° do +90° (0° = poziom)
-      distance: 50     // 1-100m (dystans od słuchacza)
+      distance: 20     // 1-100m (domyślnie 20m = dobrze słyszalne)
     },
     instanceId: null,  // Unikalny ID instancji
     isLoading: false   // Flaga ładowania
@@ -341,12 +342,23 @@ async function initAudioContext() {
   });
   
   // === Węzły dla obiektów ===
+  // Model odległości: używamy 'inverse' z dostosowanymi parametrami
+  // Wzór: gain = refDistance / (refDistance + rolloffFactor * (distance - refDistance))
+  // 
+  // NAUKOWE PODSTAWY:
+  // - Prawo odwrotnych kwadratów (1/r²) opisuje idealne tłumienie w wolnej przestrzeni
+  // - W rzeczywistości tłumienie jest wolniejsze z powodu odbić i absorpcji
+  // - refDistance = 2m oznacza "pełną głośność" w odległości 2 metrów
+  // - rolloffFactor = 0.3 daje realistyczne, łagodne tłumienie
+  // - Przy 100m głośność = 2/(2+0.3*98) = 2/31.4 = 6.4% (zamiast 2.5% przy domyślnych)
   CONFIG.objects.forEach(obj => {
     const gain = state.audioContext.createGain();
     const panner = state.audioContext.createPanner();
     panner.panningModel = 'HRTF';
     panner.distanceModel = 'inverse';
-    panner.refDistance = 1;
+    panner.refDistance = 2;        // Dźwięk referencyjny = 2m (bliski)
+    panner.maxDistance = 10000;
+    panner.rolloffFactor = 0.3;    // Wolniejsze tłumienie (domyślnie 1.0)
     
     gain.connect(panner);
     panner.connect(state.masterGain);
@@ -815,8 +827,10 @@ async function toggleObject(objectId, enabled) {
     source.loop = true;
     source.connect(objState.gainNode);
     
+    // Głośność końcowa = volume × baseVolume
+    const finalVolume = objState.volume * objState.baseVolume;
     objState.gainNode.gain.setValueAtTime(0, state.audioContext.currentTime);
-    objState.gainNode.gain.setTargetAtTime(objState.volume, state.audioContext.currentTime, CONFIG.fadeInTime);
+    objState.gainNode.gain.setTargetAtTime(finalVolume, state.audioContext.currentTime, CONFIG.fadeInTime);
     
     source.start();
     objState.source = source;
@@ -862,7 +876,7 @@ async function toggleObject(objectId, enabled) {
 }
 
 /**
- * Aktualizuje głośność obiektu
+ * Aktualizuje głośność obiektu (uwzględnia baseVolume)
  * @param {string} objectId - ID obiektu
  * @param {number} volume - Głośność 0-1
  */
@@ -871,7 +885,27 @@ function updateObjectVolume(objectId, volume) {
   if (objState) {
     objState.volume = volume;
     if (objState.gainNode && objState.enabled) {
-      objState.gainNode.gain.setTargetAtTime(volume, state.audioContext.currentTime, 0.1);
+      // Głośność końcowa = volume × baseVolume
+      const finalVolume = volume * objState.baseVolume;
+      objState.gainNode.gain.setTargetAtTime(finalVolume, state.audioContext.currentTime, 0.1);
+    }
+  }
+  markStateChanged();
+}
+
+/**
+ * Aktualizuje głośność bazową obiektu (do normalizacji plików)
+ * @param {string} objectId - ID obiektu
+ * @param {number} baseVolume - Głośność bazowa 0-2 (1.0 = neutralna)
+ */
+function updateObjectBaseVolume(objectId, baseVolume) {
+  const objState = state.architect.objects[objectId];
+  if (objState) {
+    objState.baseVolume = baseVolume;
+    if (objState.gainNode && objState.enabled) {
+      // Głośność końcowa = volume × baseVolume
+      const finalVolume = objState.volume * baseVolume;
+      objState.gainNode.gain.setTargetAtTime(finalVolume, state.audioContext.currentTime, 0.1);
     }
   }
   markStateChanged();
@@ -1136,6 +1170,7 @@ function selectObjectFor3DControl(objectId) {
     controlsPanel.style.display = 'block';
     
     // Ustaw wartości sliderów
+    document.getElementById('baseVolume3d').value = Math.round(objState.baseVolume * 100);
     document.getElementById('distance3d').value = pos3d.distance;
     document.getElementById('azimuth3d').value = pos3d.azimuth;
     document.getElementById('elevation3d').value = pos3d.elevation;
@@ -1154,10 +1189,12 @@ function selectObjectFor3DControl(objectId) {
  * Aktualizuj labels sliderów 3D
  */
 function update3DSliderLabels() {
+  const baseVolume = parseFloat(document.getElementById('baseVolume3d').value);
   const distance = parseFloat(document.getElementById('distance3d').value);
   const azimuth = parseFloat(document.getElementById('azimuth3d').value);
   const elevation = parseFloat(document.getElementById('elevation3d').value);
   
+  document.getElementById('baseVolumeValue').textContent = baseVolume.toFixed(0) + '%';
   document.getElementById('distanceValue').textContent = distance.toFixed(0) + 'm';
   document.getElementById('azimuthValue').textContent = azimuth.toFixed(0) + '°';
   document.getElementById('elevationValue').textContent = elevation > 0 ? '+' + elevation.toFixed(0) + '°' : elevation.toFixed(0) + '°';
@@ -1172,6 +1209,11 @@ function on3DSliderChange() {
   
   const objState = state.architect.objects[objectId];
   
+  // Aktualizuj baseVolume
+  const newBaseVolume = parseFloat(document.getElementById('baseVolume3d').value) / 100;
+  updateObjectBaseVolume(objectId, newBaseVolume);
+  
+  // Aktualizuj pozycję 3D
   objState.position3d.distance = parseFloat(document.getElementById('distance3d').value);
   objState.position3d.azimuth = parseFloat(document.getElementById('azimuth3d').value);
   objState.position3d.elevation = parseFloat(document.getElementById('elevation3d').value);
@@ -1983,9 +2025,14 @@ function setupEventHandlers() {
   });
   
   // === [NOWE] 3D Position Sliders ===
+  const baseVolume3d = document.getElementById('baseVolume3d');
   const distance3d = document.getElementById('distance3d');
   const azimuth3d = document.getElementById('azimuth3d');
   const elevation3d = document.getElementById('elevation3d');
+  
+  if (baseVolume3d) {
+    baseVolume3d.addEventListener('input', on3DSliderChange);
+  }
   
   if (distance3d) {
     distance3d.addEventListener('input', on3DSliderChange);
