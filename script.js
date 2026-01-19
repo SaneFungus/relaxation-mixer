@@ -349,7 +349,6 @@ async function initAudioContext() {
     gain.connect(state.masterGain);
     state.architect.scene.gains[scene.id] = gain;
     state.architect.scene.volumes[scene.id] = 0.5;
-    state.architect.scene.expanded[scene.id] = false;
     state.architect.scene.instanceIds[scene.id] = null;
   });
   
@@ -688,7 +687,14 @@ function stopSceneSafe(sceneId, instanceId) {
 async function selectScene(sceneId) {
   const scene = CONFIG.scenes.find(s => s.id === sceneId);
   if (!scene) return;
-  
+
+  // Guard: Sprawdź czy AudioContext jest zainicjalizowany
+  if (!state.audioContext) {
+    console.error('AudioContext nie został zainicjalizowany! Kliknij "Wejdź w ciszę" najpierw.');
+    showStatus('Kliknij "Wejdź w ciszę" aby rozpocząć', 3000);
+    return;
+  }
+
   showStatus(`Przygotowuję: ${scene.name}...`);
   
   // Zatrzymaj poprzednią scenę z fade-out
@@ -789,13 +795,20 @@ async function toggleObject(objectId, enabled) {
   const obj = CONFIG.objects.find(o => o.id === objectId);
   const objState = state.architect.objects[objectId];
   if (!obj || !objState) return;
-  
+
+  // Guard: Sprawdź czy AudioContext jest zainicjalizowany
+  if (!state.audioContext) {
+    console.error('AudioContext nie został zainicjalizowany! Kliknij "Wejdź w ciszę" najpierw.');
+    showStatus('Kliknij "Wejdź w ciszę" aby rozpocząć', 3000);
+    return;
+  }
+
   // Guard: Jeśli trwa ładowanie, ignoruj
   if (objState.isLoading) {
     console.log(`[Loading Guard] Obiekt ${objectId} wciąż się ładuje`);
     return;
   }
-  
+
   // Zapisz zamierzony stan PRZED operacją async
   objState.enabled = enabled;
   markStateChanged();
