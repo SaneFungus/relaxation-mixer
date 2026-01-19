@@ -1728,7 +1728,7 @@ function renderSceneGrid() {
 }
 
 /**
- * Renderuje grid obiektów z rozdzielonymi kontrolkami
+ * Renderuje grid obiektów (uproszczony - tylko ikona i nazwa, stan pokazywany kolorem)
  */
 function renderObjectsGrid() {
   const container = document.getElementById('objectsGrid');
@@ -1742,27 +1742,16 @@ function renderObjectsGrid() {
     return `
       <div class="object-card ${isEnabled ? 'enabled' : ''} ${isSelected ? 'selected' : ''}"
            data-object="${obj.id}"
-           role="group"
-           aria-label="${obj.name}: ${obj.description}">
-        <div class="object-checkbox ${isEnabled ? 'checked' : ''}"
-             role="checkbox"
-             aria-checked="${isEnabled}"
-             aria-label="Status ${obj.name}">
-          ${isEnabled ? '✓' : ''}
-        </div>
+           role="button"
+           tabindex="0"
+           aria-label="${obj.name}: ${obj.description}. ${isEnabled ? 'Włączony' : 'Wyłączony'}. ${isSelected ? 'Wybrany do edycji' : ''}">
         <span class="object-card-icon">${obj.icon}</span>
         <span class="object-card-name">${obj.name}</span>
-        <button type="button" class="btn-select-3d ${isSelected ? 'active' : ''}"
-                data-select-object="${obj.id}"
-                aria-label="Wybierz ${obj.name} do edycji 3D"
-                title="Wybierz do precyzyjnej edycji pozycji 3D">
-          📍
-        </button>
       </div>
     `;
   }).join('');
 
-  // Event handler: cała karta (toggle enable/disable)
+  // Event handler: cała karta
   container.querySelectorAll('.object-card').forEach(card => {
     const objectId = card.dataset.object;
     let longPressTimer = null;
@@ -1774,24 +1763,23 @@ function renderObjectsGrid() {
       toggleObject(objectId, newState);
     };
 
-    // Kliknięcie karty (bez przycisku 📍)
-    card.addEventListener('click', (e) => {
-      // Zignoruj jeśli kliknięto przycisk 📍
-      if (e.target.closest('.btn-select-3d')) return;
+    const handleSelect = () => {
+      selectObjectFor3DControl(objectId);
+      // Wibracja jeśli dostępna
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    };
 
-      handleToggle();
-    });
+    // Kliknięcie karty - toggle enabled
+    card.addEventListener('click', handleToggle);
 
     // Długie przyciśnięcie - selekcja 3D
     const startLongPress = () => {
       isLongPress = false;
       longPressTimer = setTimeout(() => {
         isLongPress = true;
-        selectObjectFor3DControl(objectId);
-        // Wibracja jeśli dostępna
-        if (navigator.vibrate) {
-          navigator.vibrate(50);
-        }
+        handleSelect();
       }, 500); // 500ms = długie przyciśnięcie
     };
 
@@ -1815,14 +1803,13 @@ function renderObjectsGrid() {
     card.addEventListener('mousedown', startLongPress);
     card.addEventListener('mouseup', cancelLongPress);
     card.addEventListener('mouseleave', cancelLongPress);
-  });
 
-  // Event handler: przycisk 📍 (select for 3D editing)
-  container.querySelectorAll('[data-select-object]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation(); // Zapobiegnij propagacji do karty
-      const objectId = btn.dataset.selectObject;
-      selectObjectFor3DControl(objectId);
+    // Keyboard support
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleToggle();
+      }
     });
   });
 }

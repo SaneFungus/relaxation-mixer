@@ -690,7 +690,13 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .architect-inner {
-  padding: 0 var(--space-lg) var(--space-lg) var(--space-lg);
+  padding: 0 var(--space-sm) var(--space-md) var(--space-sm);
+}
+
+@media (min-width: 768px) {
+  .architect-inner {
+    padding: 0 var(--space-lg) var(--space-lg) var(--space-lg);
+  }
 }
 
 /* ========================================
@@ -736,10 +742,17 @@ canvas:active {
 /* 3D Position Controls */
 .position-controls-3d {
   background: rgba(50, 184, 198, 0.05);
-  border-radius: 16px;
+  border-radius: 12px;
   padding: var(--space-md);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
   border: 1px solid rgba(50, 184, 198, 0.15);
+}
+
+@media (min-width: 768px) {
+  .position-controls-3d {
+    border-radius: 16px;
+    margin-bottom: var(--space-lg);
+  }
 }
 
 .panel-header-3d {
@@ -901,111 +914,80 @@ canvas:active {
 
 .object-card {
   background: var(--surface);
-  border: 2px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: var(--space-sm) var(--space-md);
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: var(--space-md);
   transition: all var(--transition-normal);
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  min-height: 60px;
+  gap: var(--space-md);
+  min-height: 64px;
   position: relative;
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .object-card:hover {
   border-color: rgba(50, 184, 198, 0.3);
-  transform: translateY(-2px);
+  transform: scale(1.02);
 }
 
+.object-card:active {
+  transform: scale(0.98);
+}
+
+/* Stan: wyłączony (domyślny - szary) */
+.object-card {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: var(--surface);
+}
+
+/* Stan: włączony (cyan) */
 .object-card.enabled {
   border-color: var(--cyan-glow);
-  background: rgba(50, 184, 198, 0.08);
+  background: linear-gradient(135deg, rgba(50, 184, 198, 0.12) 0%, rgba(50, 184, 198, 0.05) 100%);
+  box-shadow: 0 0 20px rgba(50, 184, 198, 0.15);
 }
 
+/* Stan: wybrany do edycji 3D (magenta) */
 .object-card.selected {
   border-color: var(--magenta-pulse);
-  background: rgba(200, 80, 160, 0.1);
-  box-shadow: 0 0 20px rgba(200, 80, 160, 0.2);
+  background: linear-gradient(135deg, rgba(200, 80, 160, 0.15) 0%, rgba(200, 80, 160, 0.08) 100%);
+  box-shadow: 0 0 25px rgba(200, 80, 160, 0.3);
 }
 
-.object-checkbox {
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-  font-size: 0.75rem;
-  color: var(--cyan-glow);
-  background: transparent;
-  pointer-events: none;
-}
-
-.object-checkbox.checked {
-  border-color: var(--cyan-glow);
-  background: var(--cyan-glow);
-  color: var(--deep-void);
+/* Stan: włączony + wybrany (kombinacja) */
+.object-card.enabled.selected {
+  border-color: var(--magenta-pulse);
+  background: linear-gradient(135deg, rgba(200, 80, 160, 0.15) 0%, rgba(50, 184, 198, 0.08) 100%);
+  box-shadow: 0 0 25px rgba(200, 80, 160, 0.3), 0 0 15px rgba(50, 184, 198, 0.2);
 }
 
 .object-card-icon {
-  font-size: 1.5rem;
-  transition: filter var(--transition-normal);
-  grid-column: 2;
-  justify-self: start;
+  font-size: 2rem;
+  transition: all var(--transition-normal);
+  flex-shrink: 0;
 }
 
 .object-card.enabled .object-card-icon {
-  filter: drop-shadow(0 0 8px rgba(50, 184, 198, 0.6));
+  filter: drop-shadow(0 0 10px rgba(50, 184, 198, 0.8));
+  transform: scale(1.1);
 }
 
 .object-card.selected .object-card-icon {
-  filter: drop-shadow(0 0 8px rgba(200, 80, 160, 0.6));
+  filter: drop-shadow(0 0 12px rgba(200, 80, 160, 0.8));
+  transform: scale(1.15);
 }
 
 .object-card-name {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--text-primary);
-  line-height: 1.2;
-  grid-column: 2;
-  justify-self: start;
-}
-
-.btn-select-3d {
-  width: 32px;
-  height: 32px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.btn-select-3d:hover {
-  border-color: var(--magenta-pulse);
-  background: rgba(200, 80, 160, 0.1);
-  color: var(--magenta-pulse);
-  transform: scale(1.1);
-}
-
-.btn-select-3d.active {
-  border-color: var(--magenta-pulse);
-  background: var(--magenta-pulse);
-  color: var(--deep-void);
-  box-shadow: 0 0 12px rgba(200, 80, 160, 0.5);
+  line-height: 1.3;
+  flex: 1;
 }
 
 /* Scene List (Legacy - keep for backward compat) */
