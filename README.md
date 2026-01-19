@@ -25,9 +25,7 @@ Statyczna strona HTML/CSS/JS zaprojektowana do hostingu na GitHub Pages.
 ## 🚀 Demo
 
 **Strona dostępna pod:**  
-👉 **[https://[twoja-nazwa].github.io/przestrzen-relaksu/]()**
-
-*(Zastąp swoją nazwą użytkownika GitHub)*
+👉 **[https://sanefungus.github.io/relaxation-mixer/]()**
 
 ---
 
