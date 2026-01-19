@@ -742,6 +742,45 @@ canvas:active {
   border: 1px solid rgba(50, 184, 198, 0.15);
 }
 
+.panel-header-3d {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid rgba(50, 184, 198, 0.15);
+}
+
+.panel-header-3d .panel-title {
+  margin-bottom: 0;
+}
+
+.btn-close-3d {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.btn-close-3d:hover {
+  background: rgba(255, 80, 80, 0.2);
+  color: #ff5050;
+  transform: scale(1.1);
+}
+
+.btn-close-3d:active {
+  transform: scale(0.95);
+}
+
 .slider-3d-group {
   margin-bottom: var(--space-md);
 }
@@ -827,6 +866,31 @@ canvas:active {
   line-height: 1.2;
 }
 
+/* Wspólny suwak głośności scen */
+.scene-volume-control {
+  background: rgba(50, 184, 198, 0.05);
+  border-radius: 12px;
+  padding: var(--space-md);
+  margin-bottom: var(--space-xl);
+  border: 1px solid rgba(50, 184, 198, 0.15);
+}
+
+.scene-volume-control label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.scene-volume-control .volume-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--cyan-glow);
+  font-size: 0.85rem;
+}
+
 /* Objects Grid (Simplified) */
 .objects-grid {
   display: grid;
@@ -839,17 +903,17 @@ canvas:active {
   background: var(--surface);
   border: 2px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
-  padding: var(--space-md);
-  cursor: pointer;
+  padding: var(--space-sm) var(--space-md);
   transition: all var(--transition-normal);
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: var(--space-xs);
-  min-height: 80px;
+  gap: var(--space-sm);
+  min-height: 60px;
   position: relative;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .object-card:hover {
@@ -868,9 +932,32 @@ canvas:active {
   box-shadow: 0 0 20px rgba(200, 80, 160, 0.2);
 }
 
+.object-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  font-size: 0.75rem;
+  color: var(--cyan-glow);
+  background: transparent;
+  pointer-events: none;
+}
+
+.object-checkbox.checked {
+  border-color: var(--cyan-glow);
+  background: var(--cyan-glow);
+  color: var(--deep-void);
+}
+
 .object-card-icon {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   transition: filter var(--transition-normal);
+  grid-column: 2;
+  justify-self: start;
 }
 
 .object-card.enabled .object-card-icon {
@@ -884,25 +971,41 @@ canvas:active {
 .object-card-name {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: var(--text-primary);
   line-height: 1.2;
+  grid-column: 2;
+  justify-self: start;
 }
 
-.object-card-status {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--text-secondary);
-  transition: background var(--transition-fast);
+.btn-select-3d {
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
-.object-card.enabled .object-card-status {
-  background: var(--cyan-glow);
-  box-shadow: 0 0 8px var(--cyan-glow);
+.btn-select-3d:hover {
+  border-color: var(--magenta-pulse);
+  background: rgba(200, 80, 160, 0.1);
+  color: var(--magenta-pulse);
+  transform: scale(1.1);
+}
+
+.btn-select-3d.active {
+  border-color: var(--magenta-pulse);
+  background: var(--magenta-pulse);
+  color: var(--deep-void);
+  box-shadow: 0 0 12px rgba(200, 80, 160, 0.5);
 }
 
 /* Scene List (Legacy - keep for backward compat) */

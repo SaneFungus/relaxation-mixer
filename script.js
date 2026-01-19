@@ -193,7 +193,7 @@ const state = {
     position: 'center',
     syncWithSpace: false
   },
-  
+
   // ARCHITEKT PRZESTRZENI
   architect: {
     isExpanded: false,
@@ -204,7 +204,6 @@ const state = {
       gains: {},
       buffers: {},
       volumes: {},
-      expanded: {},
       instanceIds: {}  // Śledzenie instancji dla race condition prevention
     },
     objects: {},
@@ -741,14 +740,16 @@ async function selectScene(sceneId) {
 }
 
 /**
- * Aktualizuje głośność sceny
- * @param {string} sceneId - ID sceny
+ * Aktualizuje głośność aktywnej sceny
  * @param {number} volume - Głośność 0-1
  */
-function updateSceneVolume(sceneId, volume) {
+function updateSceneVolume(volume) {
+  const sceneId = state.architect.scene.active;
+  if (!sceneId) return;
+
   state.architect.scene.volumes[sceneId] = volume;
-  
-  if (state.architect.scene.gains[sceneId] && state.architect.scene.active === sceneId) {
+
+  if (state.architect.scene.gains[sceneId]) {
     state.architect.scene.gains[sceneId].gain.setTargetAtTime(volume, state.audioContext.currentTime, 0.1);
   }
   markStateChanged();
@@ -776,14 +777,6 @@ function stopScene(sceneId) {
   showStatus('Przestrzeń wyłączona');
 }
 
-/**
- * Przełącza rozwinięcie szczegółów sceny
- * @param {string} sceneId - ID sceny
- */
-function toggleSceneExpanded(sceneId) {
-  state.architect.scene.expanded[sceneId] = !state.architect.scene.expanded[sceneId];
-  markStateChanged();
-}
 
 /**
  * Włącza/wyłącza obiekt dźwiękowy
@@ -1178,42 +1171,53 @@ function updateObject3DPosition(objectId) {
  */
 function selectObjectFor3DControl(objectId) {
   state.architect.selectedObjectId = objectId;
-  
+
   const controlsPanel = document.getElementById('positionControls3d');
-  
+
   if (objectId) {
     const objState = state.architect.objects[objectId];
     const obj = CONFIG.objects.find(o => o.id === objectId);
     const pos3d = objState.position3d;
-    
-    // Pokaż kontrolki
+
+    // Pokaż kontrolki (niezależnie od enabled - można edytować pozycję wyłączonego obiektu)
     controlsPanel.style.display = 'block';
-    
+
     // Dynamicznie dodaj suwak głośności jeśli nie istnieje
     ensureVolumeSliderExists(controlsPanel);
-    
+
     // Ustaw wartości sliderów
     const baseVolumeSlider = document.getElementById('baseVolume3d');
     if (baseVolumeSlider) {
       baseVolumeSlider.value = Math.round(objState.baseVolume * 100);
     }
-    
+
     document.getElementById('distance3d').value = pos3d.distance;
     document.getElementById('azimuth3d').value = pos3d.azimuth;
     document.getElementById('elevation3d').value = pos3d.elevation;
-    
+
     // Aktualizuj tytuł panelu z nazwą obiektu
     const titleEl = controlsPanel.querySelector('.panel-title');
     if (titleEl && obj) {
       titleEl.innerHTML = `${obj.icon} ${obj.name} — pozycja 3D`;
     }
-    
+
     update3DSliderLabels();
+
+    // Setup przycisku zamknięcia (jeśli istnieje)
+    const closeBtn = controlsPanel.querySelector('.btn-close-3d');
+    if (closeBtn) {
+      closeBtn.onclick = () => {
+        state.architect.selectedObjectId = null;
+        controlsPanel.style.display = 'none';
+        markStateChanged();
+        drawVisualization();
+      };
+    }
   } else {
     // Ukryj kontrolki
     controlsPanel.style.display = 'none';
   }
-  
+
   markStateChanged();
   drawVisualization();
 }
@@ -1547,11 +1551,10 @@ function updateTimerDisplay() {
  */
 function syncAllUI() {
   syncSceneUI();
-  syncSceneGridUI();    // [NOWE] Sync grid scen
   syncObjectsUI();
-  syncObjectsGridUI();  // [NOWE] Sync grid obiektów
+  syncObjectsGridUI();
   syncMeditationUI();
-  drawVisualization();  // [NOWE] Odśwież canvas
+  drawVisualization();
 }
 
 /**
@@ -1561,10 +1564,33 @@ function syncSceneGridUI() {
   document.querySelectorAll('.scene-card').forEach(card => {
     const sceneId = card.dataset.scene;
     const isActive = sceneId === state.architect.scene.active;
-    
+
     card.classList.toggle('active', isActive);
     card.setAttribute('aria-checked', isActive);
   });
+
+  // Pokaż/ukryj wspólny suwak głośności
+  const volumeControl = document.getElementById('sceneVolumeControl');
+  if (volumeControl) {
+    if (state.architect.scene.active) {
+      volumeControl.style.display = 'block';
+
+      // Zaktualizuj wartość suwaka
+      const volume = state.architect.scene.volumes[state.architect.scene.active] ?? 0.5;
+      const volumeSlider = document.getElementById('sceneVolume');
+      const volumeValue = document.getElementById('sceneVolumeValue');
+
+      if (volumeSlider) {
+        volumeSlider.value = Math.round(volume * 100);
+        updateRangeFill(volumeSlider, document.getElementById('sceneVolumeFill'));
+      }
+      if (volumeValue) {
+        volumeValue.textContent = `${Math.round(volume * 100)}%`;
+      }
+    } else {
+      volumeControl.style.display = 'none';
+    }
+  }
 }
 
 /**
@@ -1587,14 +1613,8 @@ function syncObjectsGridUI() {
  * Synchronizuje UI scen z aktualnym stanem
  */
 function syncSceneUI() {
-  document.querySelectorAll('.scene-item').forEach(item => {
-    const sceneId = item.dataset.scene;
-    const isSelected = sceneId === state.architect.scene.active;
-    const isExpanded = state.architect.scene.expanded[sceneId];
-    
-    item.classList.toggle('selected', isSelected);
-    item.classList.toggle('expanded', isExpanded);
-  });
+  // Uproszczona wersja - tylko synchronizacja grid
+  syncSceneGridUI();
 }
 
 /**
@@ -1650,17 +1670,17 @@ function syncMeditationUI() {
 }
 
 /**
- * Renderuje grid scen (simplified mobile-friendly)
+ * Renderuje grid scen (uproszczony - bez suwaków)
  */
 function renderSceneGrid() {
   const container = document.getElementById('sceneGrid');
   if (!container) return;
-  
+
   container.innerHTML = CONFIG.scenes.map(scene => {
     const isActive = state.architect.scene.active === scene.id;
-    
+
     return `
-      <div class="scene-card ${isActive ? 'active' : ''}" 
+      <div class="scene-card ${isActive ? 'active' : ''}"
            data-scene="${scene.id}"
            role="radio"
            tabindex="0"
@@ -1671,19 +1691,19 @@ function renderSceneGrid() {
       </div>
     `;
   }).join('');
-  
-  // Event handlers
+
+  // Event handlers - kliknięcie karty
   container.querySelectorAll('.scene-card').forEach(card => {
     const handleSelect = () => {
       const sceneId = card.dataset.scene;
-      
+
       if (state.architect.scene.active === sceneId) {
         stopScene(sceneId);
       } else {
         selectScene(sceneId);
       }
     };
-    
+
     card.addEventListener('click', handleSelect);
     card.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -1695,55 +1715,101 @@ function renderSceneGrid() {
 }
 
 /**
- * Renderuje grid obiektów (simplified mobile-friendly)
+ * Renderuje grid obiektów z rozdzielonymi kontrolkami
  */
 function renderObjectsGrid() {
   const container = document.getElementById('objectsGrid');
   if (!container) return;
-  
+
   container.innerHTML = CONFIG.objects.map(obj => {
     const objState = state.architect.objects[obj.id];
     const isEnabled = objState.enabled;
     const isSelected = state.architect.selectedObjectId === obj.id;
-    
+
     return `
-      <div class="object-card ${isEnabled ? 'enabled' : ''} ${isSelected ? 'selected' : ''}" 
+      <div class="object-card ${isEnabled ? 'enabled' : ''} ${isSelected ? 'selected' : ''}"
            data-object="${obj.id}"
-           role="checkbox"
-           tabindex="0"
-           aria-checked="${isEnabled}"
+           role="group"
            aria-label="${obj.name}: ${obj.description}">
-        <span class="object-card-status"></span>
+        <div class="object-checkbox ${isEnabled ? 'checked' : ''}"
+             role="checkbox"
+             aria-checked="${isEnabled}"
+             aria-label="Status ${obj.name}">
+          ${isEnabled ? '✓' : ''}
+        </div>
         <span class="object-card-icon">${obj.icon}</span>
         <span class="object-card-name">${obj.name}</span>
+        <button type="button" class="btn-select-3d ${isSelected ? 'active' : ''}"
+                data-select-object="${obj.id}"
+                aria-label="Wybierz ${obj.name} do edycji 3D"
+                title="Wybierz do precyzyjnej edycji pozycji 3D">
+          📍
+        </button>
       </div>
     `;
   }).join('');
-  
-  // Event handlers
+
+  // Event handler: cała karta (toggle enable/disable)
   container.querySelectorAll('.object-card').forEach(card => {
+    const objectId = card.dataset.object;
+    let longPressTimer = null;
+    let isLongPress = false;
+
     const handleToggle = () => {
-      const objectId = card.dataset.object;
-      const objState = state.architect.objects[objectId];
-      const newState = !objState.enabled;
-      
-      // Toggle enable/disable
+      if (isLongPress) return; // Nie toggleuj jeśli było długie przyciśnięcie
+      const newState = !state.architect.objects[objectId].enabled;
       toggleObject(objectId, newState);
-      
-      // Jeśli włączamy, zaznacz do kontroli 3D
-      if (newState) {
-        setTimeout(() => {
-          selectObjectFor3DControl(objectId);
-        }, 100);
-      }
     };
-    
-    card.addEventListener('click', handleToggle);
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        handleToggle();
+
+    // Kliknięcie karty (bez przycisku 📍)
+    card.addEventListener('click', (e) => {
+      // Zignoruj jeśli kliknięto przycisk 📍
+      if (e.target.closest('.btn-select-3d')) return;
+
+      handleToggle();
+    });
+
+    // Długie przyciśnięcie - selekcja 3D
+    const startLongPress = () => {
+      isLongPress = false;
+      longPressTimer = setTimeout(() => {
+        isLongPress = true;
+        selectObjectFor3DControl(objectId);
+        // Wibracja jeśli dostępna
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+      }, 500); // 500ms = długie przyciśnięcie
+    };
+
+    const cancelLongPress = () => {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
       }
+      // Reset po krótkiej chwili
+      setTimeout(() => {
+        isLongPress = false;
+      }, 100);
+    };
+
+    // Touch events
+    card.addEventListener('touchstart', startLongPress);
+    card.addEventListener('touchend', cancelLongPress);
+    card.addEventListener('touchmove', cancelLongPress);
+
+    // Mouse events (dla desktop)
+    card.addEventListener('mousedown', startLongPress);
+    card.addEventListener('mouseup', cancelLongPress);
+    card.addEventListener('mouseleave', cancelLongPress);
+  });
+
+  // Event handler: przycisk 📍 (select for 3D editing)
+  container.querySelectorAll('[data-select-object]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Zapobiegnij propagacji do karty
+      const objectId = btn.dataset.selectObject;
+      selectObjectFor3DControl(objectId);
     });
   });
 }
@@ -1796,67 +1862,6 @@ function renderSessionCards() {
   });
 }
 
-/**
- * Renderuje listę scen
- */
-function renderSceneList() {
-  const container = document.getElementById('sceneList');
-  container.innerHTML = CONFIG.scenes.map(scene => {
-    const volume = Math.round((state.architect.scene.volumes[scene.id] ?? 0.5) * 100);
-    const isExpanded = state.architect.scene.expanded[scene.id];
-    const isSelected = state.architect.scene.active === scene.id;
-    
-    return `
-      <div class="scene-item ${isSelected ? 'selected' : ''} ${isExpanded ? 'expanded' : ''}" 
-           data-scene="${scene.id}">
-        <div class="scene-header" data-scene-header="${scene.id}">
-          <div class="scene-radio" aria-hidden="true"></div>
-          <span class="scene-icon">${scene.icon}</span>
-          <span class="scene-name">${scene.name}</span>
-          <span class="scene-expand-icon">▼</span>
-        </div>
-        <div class="scene-details">
-          <div class="scene-volume-control">
-            <span class="scene-volume-label">Głośność:</span>
-            <div class="range-wrapper">
-              <div class="range-fill scene-range-fill-${scene.id}"></div>
-              <input type="range" min="0" max="100" value="${volume}" 
-                     data-scene-volume="${scene.id}"
-                     aria-label="Głośność: ${scene.name}">
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-  
-  container.querySelectorAll('.scene-header').forEach(header => {
-    header.addEventListener('click', (e) => {
-      const sceneId = header.dataset.sceneHeader;
-      
-      if (state.architect.scene.active === sceneId) {
-        stopScene(sceneId);
-      } else {
-        selectScene(sceneId);
-      }
-      
-      toggleSceneExpanded(sceneId);
-    });
-  });
-  
-  container.querySelectorAll('[data-scene-volume]').forEach(input => {
-    const sceneId = input.dataset.sceneVolume;
-    const fillEl = container.querySelector(`.scene-range-fill-${sceneId}`);
-    
-    updateRangeFill(input, fillEl);
-    
-    input.addEventListener('input', (e) => {
-      const volume = e.target.value / 100;
-      updateSceneVolume(sceneId, volume);
-      updateRangeFill(input, fillEl);
-    });
-  });
-}
 
 /**
  * Renderuje listę obiektów
@@ -1988,7 +1993,7 @@ function setupEventHandlers() {
   const voiceVolume = document.getElementById('voiceVolume');
   const voiceVolumeFill = document.getElementById('voiceVolumeFill');
   updateRangeFill(voiceVolume, voiceVolumeFill);
-  
+
   voiceVolume.addEventListener('input', (e) => {
     state.meditation.volume = e.target.value / 100;
     document.getElementById('voiceVolumeValue').textContent = `${e.target.value}%`;
@@ -1997,6 +2002,20 @@ function setupEventHandlers() {
       state.meditation.gainNode.gain.setTargetAtTime(state.meditation.volume, state.audioContext.currentTime, 0.1);
     }
   });
+
+  // === Scene volume (wspólny suwak) ===
+  const sceneVolume = document.getElementById('sceneVolume');
+  const sceneVolumeFill = document.getElementById('sceneVolumeFill');
+  if (sceneVolume) {
+    updateRangeFill(sceneVolume, sceneVolumeFill);
+
+    sceneVolume.addEventListener('input', (e) => {
+      const volume = e.target.value / 100;
+      updateSceneVolume(volume);
+      updateRangeFill(sceneVolume, sceneVolumeFill);
+      document.getElementById('sceneVolumeValue').textContent = `${e.target.value}%`;
+    });
+  }
   
   // === HRTF toggle ===
   const hrtfToggle = document.getElementById('hrtfToggle');
@@ -2127,7 +2146,6 @@ function init() {
   // Inicjalizacja stanu scen
   CONFIG.scenes.forEach(scene => {
     state.architect.scene.volumes[scene.id] = 0.5;
-    state.architect.scene.expanded[scene.id] = false;
     state.architect.scene.instanceIds[scene.id] = null;
   });
   
