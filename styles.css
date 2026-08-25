@@ -1944,6 +1944,41 @@ body {
   opacity: 0.72;
 }
 
+/* ----------------------------------------
+   Ekran powitalny na duzym ekranie.
+   Uklad bazowy jest zbudowany pod telefon: kolumna na cala szerokosc okna
+   i przycisk rozciagniety od krawedzi do krawedzi. Na monitorze wygladalo to
+   jak powiekszony telefon — tytul przy lewej krawedzi, przycisk szeroki na
+   caly ekran. Ponizej kolumna dostaje szerokosc czytelnego bloku i staje na
+   srodku. Na telefonie nic sie nie zmienia — regula wchodzi od 768 px.
+   ---------------------------------------- */
+@media (min-width: 768px) {
+  .audio-prompt-content {
+    max-width: 520px;
+    margin: 0 auto;
+    justify-content: center;
+    padding: var(--space-xl) 0;
+  }
+
+  /* margin-bottom: auto z ukladu telefonowego spycha wordmark na gore ekranu.
+     Na desktopie kolumna jest wysrodkowana, wiec auto musi zniknac. */
+  .sal-wordmark { margin-bottom: 44px; }
+
+  .audio-prompt-title { font-size: 58px; margin: 0 0 20px; }
+  .audio-prompt-text  { font-size: 13.5px; margin-bottom: 30px; }
+
+  /* Przycisk na szerokosc tresci, nie na szerokosc okna. */
+  .btn-start {
+    width: auto;
+    align-self: flex-start;
+    padding: 0 44px;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+  }
+  .btn-start:hover { opacity: 0.88; }
+
+  .audio-prompt-content .kpo-banner { margin-top: 44px; }
+}
+
 /* ========================================
    BANER KPO / UE
    ======================================== */
