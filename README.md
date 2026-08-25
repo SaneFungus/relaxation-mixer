@@ -1,3 +1,5 @@
+![Zestawienie logotypów KPO, RP i UE](https://raw.githubusercontent.com/spatial-audio-lab/spatial-audio-lab.github.io/main/KPO.jpg)
+
 # Przestrzeń Relaksu
 
 **Binauralny mikser relaksacyjny z dźwiękiem przestrzennym 3D**
